@@ -331,7 +331,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
               unit="mmHg"
               displayValue={`${vitalSigns.bloodPressure.systolic}/${vitalSigns.bloodPressure.diastolic}`}
               style={{ height: "100%" }}
-              onSample={handleBloodPressureSample}
+              onSampleAction={handleBloodPressureSample}
             />
           </div>
           <div className={`${PANEL_TRANSITION_CLASS} h-full`}>
@@ -341,7 +341,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
               label="Pleth"
               showDelta={true}
               style={{ height: "100%" }}
-              onSample={handleBloodVolumeSample}
+              onSampleAction={handleBloodVolumeSample}
             />
           </div>
           <div className={`${PANEL_TRANSITION_CLASS} h-full`}>
@@ -352,7 +352,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
               unit="bpm"
               displayValue={vitalSigns.heartRate.toString()}
               style={{ height: "100%" }}
-              onSample={handleEcgSample}
+              onSampleAction={handleEcgSample}
             />
           </div>
           <div className={`${PANEL_TRANSITION_CLASS} h-full`}>
@@ -363,7 +363,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
               unit="bpm"
               displayValue={vitalSigns.heartRate.toString()}
               style={{ height: "100%" }}
-              onSample={handleEcgSample}
+              onSampleAction={handleEcgSample}
             />
           </div>
           <div className={`${PANEL_TRANSITION_CLASS} h-full`}>
@@ -374,7 +374,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
               unit="%"
               displayValue={vitalSigns.spo2.toString()}
               style={{ height: "100%" }}
-              onSample={handleBloodOxygenSample}
+              onSampleAction={handleBloodOxygenSample}
             />
           </div>
           <div className={`${PANEL_TRANSITION_CLASS} h-full`}>
@@ -384,7 +384,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
               label=""
               unit="%"
               style={{ height: "100%" }}
-              onSample={handleBloodOxygenSample}
+              onSampleAction={handleBloodOxygenSample}
             />
           </div>
         </div>
@@ -412,7 +412,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
             unit="bpm"
             displayValue={vitalSigns.heartRate.toString()}
             style={{ height: "100%" }}
-            onSample={handleEcgSample}
+            onSampleAction={handleEcgSample}
           />
         </div>
 

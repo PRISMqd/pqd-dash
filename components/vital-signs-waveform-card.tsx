@@ -51,7 +51,7 @@ export type VitalSignsWaveformCardProps = {
   unit?: string;
   showDelta?: boolean;
   style?: CSSProperties;
-  onSample?: (value: number) => void;
+  onSampleAction?: (value: number) => void;
 };
 
 export function VitalSignsWaveformCard({
@@ -62,7 +62,7 @@ export function VitalSignsWaveformCard({
   unit = "",
   showDelta = false,
   style,
-  onSample,
+  onSampleAction: onSample,
 }: VitalSignsWaveformCardProps) {
   const [currentValue, setCurrentValue] = useState<number>(0);
 
@@ -206,7 +206,7 @@ export function VitalSignsWaveformCard({
     >
       {/* Left handle bar from PDF */}
       <div
-        className="w-3 rounded-md opacity-50 bg-[var(--waveform-stroke)]"
+        className="w-3 rounded-md opacity-50 bg-(--waveform-stroke)"
         style={
           {
             "--waveform-stroke": config.strokeColor,
@@ -220,7 +220,7 @@ export function VitalSignsWaveformCard({
       </div>
 
       {/* Value display box on the right */}
-      <div className="bg-[#7BB8A9]/20 rounded-lg px-3 py-2 flex flex-col items-center justify-center min-w-[80px]">
+      <div className="bg-[#7BB8A9]/20 rounded-lg px-3 py-2 flex flex-col items-center justify-center min-w-20">
         {label && (
           <div className="text-[10px] font-medium text-[#3F6E67] uppercase tracking-wider mb-1">
             {label}
