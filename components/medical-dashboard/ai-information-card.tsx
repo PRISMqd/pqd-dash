@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 import type { AiInsight } from "@/components/medical-dashboard/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 export function AIInformationCard({
@@ -27,22 +28,27 @@ export function AIInformationCard({
           {insight.headline}
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 min-h-0 overflow-y-auto px-2.5 pb-2.5 text-xs space-y-2 leading-relaxed">
-        {insight.details.map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
-        ))}
-        {insight.recommendations.length > 0 ? (
-          <div className="space-y-1 pt-1">
-            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Recommended Actions
+      <CardContent className="flex-1 min-h-0 px-2.5 pb-2.5 text-xs leading-relaxed">
+        <ScrollArea
+          className="h-full"
+          contentClassName="space-y-2 leading-relaxed"
+        >
+          {insight.details.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+          {insight.recommendations.length > 0 ? (
+            <div className="space-y-1 pt-1">
+              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Recommended Actions
+              </div>
+              <ul className="space-y-1">
+                {insight.recommendations.map((recommendation) => (
+                  <li key={recommendation}>{recommendation}</li>
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-1">
-              {insight.recommendations.map((recommendation) => (
-                <li key={recommendation}>{recommendation}</li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
+          ) : null}
+        </ScrollArea>
       </CardContent>
     </Card>
   );

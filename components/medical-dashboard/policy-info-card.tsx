@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 export function PolicyInfoCard({
@@ -33,8 +34,10 @@ export function PolicyInfoCard({
           Policy Information:
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 min-h-0 overflow-y-auto px-2.5 pb-2.5 text-xs leading-relaxed">
-        <p>{policy.summary}</p>
+      <CardContent className="flex-1 min-h-0 px-2.5 pb-2.5 text-xs leading-relaxed">
+        <ScrollArea className="h-full" contentClassName="leading-relaxed">
+          <p>{policy.summary}</p>
+        </ScrollArea>
       </CardContent>
       <CardFooter className="px-2.5 pb-2.5 pt-0"></CardFooter>
     </Card>

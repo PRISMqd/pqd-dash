@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 export function AlertNotesCard({
@@ -35,12 +36,14 @@ export function AlertNotesCard({
           {isAlert ? config.details.title : "Notes:"}
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 min-h-0 overflow-y-auto px-2.5 pb-2.5 text-xs space-y-2">
-        {isAlert ? (
-          <AlertDetails details={config.details} />
-        ) : (
-          <NotesPlaceholder text={config.notesPlaceholder} />
-        )}
+      <CardContent className="flex-1 min-h-0 px-2.5 pb-2.5 text-xs">
+        <ScrollArea className="h-full" contentClassName="space-y-2">
+          {isAlert ? (
+            <AlertDetails details={config.details} />
+          ) : (
+            <NotesPlaceholder text={config.notesPlaceholder} />
+          )}
+        </ScrollArea>
       </CardContent>
       <CardFooter className="px-2.5 pb-2.5 pt-0"></CardFooter>
     </Card>

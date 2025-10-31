@@ -63,6 +63,7 @@
     "react-dom": "19.2.0",
     "react-hook-form": "^7.65.0",
     "react-resizable-panels": "^2.1.9",
+    "react-scrollbars-custom": "^4.1.1",
     "recharts": "latest",
     "scichart": "^4.0.897",
     "sonner": "^1.7.4",
