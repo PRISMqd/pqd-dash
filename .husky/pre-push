@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+set -eu
+
+if command -v bun >/dev/null 2>&1; then
+  bun run lint
+  bun run format:check
+  if git ls-files '*.md' >/dev/null 2>&1; then
+    git ls-files -z '*.md' | xargs -0 bunx markdownlint-cli2 --config .markdownlint.json
+  fi
+else
+  npm run lint
+  npm run format:check
+  if git ls-files '*.md' >/dev/null 2>&1; then
+    git ls-files -z '*.md' | xargs -0 npx --yes markdownlint-cli2 --config .markdownlint.json
+  fi
+fi

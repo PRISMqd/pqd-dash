@@ -1,0 +1,205 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* PRISM Design System - Main Theme (using RGB for accurate pastel colors) */
+  --prism-teal-100: rgb(175, 212, 207); /* #AFD4CF - soft pastel teal */
+  --prism-teal-200: rgb(167, 224, 229); /* #A7E0E5 - light sky blue */
+  --prism-teal-300: rgb(94, 142, 136); /* #5E8E88 - muted teal */
+  --prism-gray-50: rgb(242, 246, 245); /* #F2F6F5 - almost white */
+  --prism-gray-100: rgb(201, 217, 214); /* #C9D9D6 - very light gray-teal */
+  --prism-gray-200: rgb(188, 175, 169); /* #BCAFA9 - warm gray */
+  --prism-gray-300: rgb(167, 196, 190); /* #A7C4BE - light teal-gray */
+  --prism-gray-400: rgb(148, 165, 162); /* #94A5A2 - medium gray-teal */
+  --prism-gray-500: rgb(75, 90, 87); /* #4B5A57 - dark muted teal */
+  --prism-gray-900: rgb(30, 42, 40); /* #1E2A28 - very dark teal-black */
+
+  /* PRISM Design System - Interactions & Accent */
+  --prism-interactive-teal-100: rgb(
+    123,
+    184,
+    169
+  ); /* #7BB8A9 - medium pastel teal */
+  --prism-interactive-teal-200: rgb(92, 157, 141); /* #5C9D8D - muted teal */
+  --prism-interactive-teal-300: rgb(63, 110, 103); /* #3F6E67 - dark teal */
+  --prism-interactive-gray: rgb(194, 204, 201); /* #C2CCC9 - light cool gray */
+
+  /* PRISM Design System - Data Display */
+  --prism-data-dark-900: rgb(28, 38, 37); /* #1C2625 - very dark teal */
+  --prism-data-dark-700: rgb(45, 85, 80); /* #2D5550 - dark teal-green */
+  --prism-data-dark-600: rgb(58, 95, 123); /* #3A5F7B - dark blue-teal */
+  --prism-data-green: rgb(91, 126, 95); /* #5B7E5F - muted sage green */
+  --prism-data-brown: rgb(123, 102, 69); /* #7B6645 - muted brown */
+
+  /* PRISM Design System - Alternates */
+  --prism-alt-orange: rgb(212, 126, 61); /* #D47E3D - burnt orange */
+  --prism-alt-blue: rgb(62, 127, 163); /* #3E7FA3 - muted blue */
+  --prism-alt-black: rgb(27, 42, 43); /* #1B2A2B - near black */
+  --prism-alt-gray: rgb(187, 181, 174); /* #BBB5AE - warm light gray */
+
+  /* PRISM Design System - Alarms */
+  --prism-alarm-green: rgb(33, 143, 103); /* #218F67 - medical green */
+  --prism-alarm-yellow: rgb(209, 194, 71); /* #D1C247 - warning yellow */
+  --prism-alarm-red: rgb(194, 45, 77); /* #C22D4D - critical red */
+  --prism-alarm-blue: rgb(75, 144, 166); /* #4B90A6 - info blue */
+
+  /* Shadcn/UI Semantic Tokens - Mapped to PRISM Design System */
+  --background: var(--prism-teal-100); /* #AFD4CF - soft pastel teal page bg */
+  --foreground: var(--prism-gray-900); /* #1E2A28 - dark text */
+  --card: var(--prism-gray-100); /* #C9D9D6 - light teal cards (NOT white) */
+  --card-foreground: var(--prism-gray-900); /* dark text on light teal cards */
+  --popover: var(--prism-gray-100);
+  --popover-foreground: var(--prism-gray-900);
+  --primary: var(--prism-interactive-teal-200); /* #5C9D8D - medium teal */
+  --primary-foreground: var(--prism-gray-50);
+  --secondary: var(--prism-gray-300); /* #A7C4BE - light teal-gray */
+  --secondary-foreground: var(--prism-gray-900);
+  --muted: var(--prism-gray-100); /* #C9D9D6 - very light teal */
+  --muted-foreground: var(--prism-gray-500); /* #4B5A57 - muted text */
+  --accent: var(--prism-interactive-teal-100); /* #7BB8A9 - medium teal */
+  --accent-foreground: var(--prism-gray-900);
+  --destructive: var(--prism-alarm-red); /* #C22D4D - critical red */
+  --destructive-foreground: var(--prism-gray-50);
+  --border: var(--prism-interactive-gray); /* #C2CCC9 - light gray borders */
+  --input: var(--prism-gray-100); /* light teal input backgrounds */
+  --ring: var(--prism-interactive-teal-200);
+  --chart-1: var(--prism-interactive-teal-200);
+  --chart-2: var(--prism-alt-blue);
+  --chart-3: var(--prism-data-green);
+  --chart-4: var(--prism-alt-orange);
+  --chart-5: var(--prism-data-brown);
+  --radius: 0.5rem;
+  --sidebar: var(--prism-gray-50);
+  --sidebar-foreground: var(--prism-gray-900);
+  --sidebar-primary: var(--prism-interactive-teal-200);
+  --sidebar-primary-foreground: var(--prism-gray-50);
+  --sidebar-accent: var(--prism-interactive-teal-100);
+  --sidebar-accent-foreground: var(--prism-gray-900);
+  --sidebar-border: var(--prism-interactive-gray);
+  --sidebar-ring: var(--prism-interactive-teal-200);
+
+  /* Medical-specific semantic tokens for dashboard components */
+  --medical-teal: var(--prism-interactive-teal-100);
+  --medical-red: var(--prism-alarm-red);
+  --medical-dark: var(--prism-teal-300); /* darker teal for accents */
+  --medical-darker: var(--prism-gray-900); /* very dark for text */
+  --medical-red-card: var(--prism-alarm-red);
+  --medical-red-border: var(--prism-alarm-red);
+  --medical-warning: var(--prism-alarm-yellow);
+  --medical-card-overlay: var(--prism-gray-100); /* light overlay */
+}
+
+.dark {
+  /* Dark mode (if enabled) - inverted from light theme */
+  --background: var(--prism-gray-900);
+  --foreground: var(--prism-gray-50);
+  --card: var(--prism-data-dark-700);
+  --card-foreground: var(--prism-gray-50);
+  --popover: var(--prism-data-dark-700);
+  --popover-foreground: var(--prism-gray-50);
+  --primary: var(--prism-interactive-teal-100);
+  --primary-foreground: var(--prism-gray-900);
+  --secondary: var(--prism-gray-500);
+  --secondary-foreground: var(--prism-gray-100);
+  --muted: var(--prism-gray-500);
+  --muted-foreground: var(--prism-gray-300);
+  --accent: var(--prism-interactive-teal-100);
+  --accent-foreground: var(--prism-gray-900);
+  --destructive: var(--prism-alarm-red);
+  --destructive-foreground: var(--prism-gray-50);
+  --border: var(--prism-interactive-teal-300);
+  --input: var(--prism-gray-500);
+  --ring: var(--prism-interactive-teal-100);
+  --chart-1: var(--prism-interactive-teal-200);
+  --chart-2: var(--prism-alt-blue);
+  --chart-3: var(--prism-data-green);
+  --chart-4: var(--prism-alt-orange);
+  --chart-5: var(--prism-data-brown);
+  --sidebar: var(--prism-data-dark-700);
+  --sidebar-foreground: var(--prism-gray-50);
+  --sidebar-primary: var(--prism-interactive-teal-100);
+  --sidebar-primary-foreground: var(--prism-gray-900);
+  --sidebar-accent: var(--prism-interactive-teal-100);
+  --sidebar-accent-foreground: var(--prism-gray-900);
+  --sidebar-border: var(--prism-interactive-teal-300);
+  --sidebar-ring: var(--prism-interactive-teal-100);
+
+  /* Medical-specific dark mode tokens */
+  --medical-teal: var(--prism-interactive-teal-100);
+  --medical-red: var(--prism-alarm-red);
+  --medical-dark: var(--prism-data-dark-700);
+  --medical-darker: var(--prism-data-dark-900);
+  --medical-red-card: var(--prism-alarm-red);
+  --medical-red-border: var(--prism-alarm-red);
+  --medical-warning: var(--prism-alarm-yellow);
+  --medical-card-overlay: var(--prism-data-dark-700);
+}
+
+@theme inline {
+  /* Inter font family per PRISM design spec */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas,
+    "DejaVu Sans Mono", monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-medical-teal: var(--medical-teal);
+  --color-medical-red: var(--medical-red);
+  --color-medical-dark: var(--medical-dark);
+  --color-medical-darker: var(--medical-darker);
+  --color-medical-red-card: var(--medical-red-card);
+  --color-medical-red-border: var(--medical-red-border);
+  --color-medical-warning: var(--medical-warning);
+  --color-medical-card-overlay: var(--medical-card-overlay);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply bg-background;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Hide SciChart community watermark to match demo appearance */

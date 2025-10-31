@@ -1,0 +1,97 @@
+experimental_monorepo_root = true
+
+[settings]
+experimental = true
+
+[tools]
+bun = "latest"
+markdownlint-cli2 = "latest"
+node = "22"
+
+[tasks.install]
+description = "Install frontend dependencies"
+run = "bun install"
+
+[tasks.dev]
+description = "Start the Next.js dev server"
+run = "dotenvx run -- bun run dev"
+
+[tasks.dev-webpack]
+description = "Start the Webpack dev server fallback"
+run = "dotenvx run -- bun run dev:webpack"
+
+[tasks.build]
+description = "Create a production build"
+run = "dotenvx run -- bun run build"
+
+[tasks.start]
+description = "Start the production server"
+run = "dotenvx run -- bun run start"
+
+[tasks.lint]
+description = "Run lint checks"
+run = "bun run lint"
+
+[tasks.lint-write]
+description = "Autofix lint issues"
+run = "bun run lint --write"
+
+[tasks.typecheck]
+description = "Run TypeScript type checking"
+run = "bunx tsc -p tsconfig.typecheck.json --noEmit"
+
+[tasks.test]
+description = "Run the default Vitest suite"
+run = "bun run test"
+
+[tasks.test-run]
+description = "Run Vitest in single-run mode"
+run = "bun run test -- --run"
+
+[tasks.test-unit]
+description = "Run Vitest unit tests"
+run = "bun run test -- src/ --run"
+
+[tasks.test-watch]
+description = "Run Vitest in watch mode"
+run = "bun run test -- --watch"
+
+[tasks.test-ui]
+description = "Launch the Vitest UI"
+run = "bun run test:ui"
+
+[tasks.test-coverage]
+description = "Generate coverage via Vitest"
+run = "bun run test:coverage"
+
+[tasks.test-e2e]
+description = "Execute Playwright E2E tests"
+run = "bun run test:e2e"
+
+[tasks.test-e2e-ui]
+description = "Open Playwright tests in UI mode"
+run = "bun run test:e2e:ui"
+
+[tasks.test-e2e-headed]
+description = "Run Playwright tests in headed mode"
+run = "bun run test:e2e:headed"
+
+[tasks.test-e2e-debug]
+description = "Run Playwright tests with debugger helpers"
+run = "bun run test:e2e:debug"
+
+[tasks.vercel-link]
+description = "Link the frontend app to a Vercel scope"
+run = "bunx vercel link"
+
+[tasks.vercel-deploy]
+description = "Create a preview deployment on Vercel"
+run = "dotenvx run -- bunx vercel deploy"
+
+[tasks.vercel-deploy-prod]
+description = "Create a production deployment on Vercel"
+run = "dotenvx run -- bunx vercel deploy --prod"
+
+[tasks.help]
+description = "List all tasks"
+run = "mise tasks ls --all"
