@@ -15,6 +15,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "PRISMqd",
   description: "",
+  colorScheme: "light",
+  other: {
+    darkreader: "disable",
+  },
 };
 
 export default function RootLayout({
