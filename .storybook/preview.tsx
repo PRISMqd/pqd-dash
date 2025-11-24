@@ -2,6 +2,8 @@ import type { Preview } from "@storybook/nextjs-vite";
 import "../app/globals.css";
 import type { Decorator } from "@storybook/react";
 import { Exo_2, Rajdhani } from "next/font/google";
+import NextImage from "next/image";
+import { createContext, useContext } from "react";
 
 const exo2 = Exo_2({
   subsets: ["latin"],
@@ -13,6 +15,18 @@ const rajdhani = Rajdhani({
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-rajdhani",
 });
+
+// Force next/image to be unoptimized in Storybook to avoid missing loader issues
+// using a module-level alias without redefining the default export
+const StorybookImage = (props: any) => <NextImage {...props} unoptimized />; // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+
+const StorybookImageContext = createContext(NextImage);
+
+const withUnoptimizedNextImage: Decorator = (Story) => (
+  <StorybookImageContext.Provider value={StorybookImage}>
+    <Story />
+  </StorybookImageContext.Provider>
+);
 
 const disableDarkReader = () => {
   if (typeof document === "undefined") return;
@@ -84,7 +98,7 @@ const preview: Preview = {
     },
   },
   tags: ["autodocs"],
-  decorators: [withFonts],
+  decorators: [withFonts, withUnoptimizedNextImage],
 };
 
 export default preview;

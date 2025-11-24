@@ -18,12 +18,14 @@ export function BodyDiagramCard({
   style,
   onClick,
   isActive,
+  unoptimizedImage,
 }: {
   onActivateAlert: () => void;
   className?: string;
   style?: CSSProperties;
   onClick?: () => void;
   isActive?: boolean;
+  unoptimizedImage?: boolean;
 }) {
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!onClick) return;
@@ -36,7 +38,7 @@ export function BodyDiagramCard({
   return (
     <Card
       className={cn(
-        "bg-transparent border-[#3F6E67]/40 p-0 flex items-center justify-center",
+        "bg-transparent border-[#3F6E67]/40 p-0 flex items-center justify-center w-full h-full min-h-[300px] overflow-hidden",
         onClick &&
           "cursor-pointer hover:border-primary/70 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-0",
         isActive && "border-primary/80 shadow-[0_6px_16px_rgba(0,0,0,0.35)] bg-[#d6e8e3]",
@@ -59,6 +61,7 @@ export function BodyDiagramCard({
           fill
           priority
           suppressHydrationWarning
+          unoptimized={unoptimizedImage}
           style={BODY_DIAGRAM_IMAGE_STYLE}
           sizes="(min-width: 1280px) 240px, (min-width: 1024px) 200px, 100vw"
         />
