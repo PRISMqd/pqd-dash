@@ -16,6 +16,7 @@ const meta: Meta = {
   title: "Medical Dashboard/Expanded Cards",
   parameters: {
     layout: "centered",
+    tags: ["autodocs"],
   },
   decorators: [
     (Story) => (
