@@ -1,0 +1,36 @@
+<!-- Disable Dark Reader / similar auto dark-mode extensions for Storybook -->
+<meta name="darkreader" content="disable" />
+<meta name="color-scheme" content="light" />
+<style>
+  :root {
+    filter: none !important;
+    background-color: rgb(175, 212, 207) !important;
+  }
+</style>
+<script>
+  // Remove Dark Reader injected styles/attributes proactively and continuously
+  (() => {
+    const html = document.documentElement;
+    html.setAttribute("data-darkreader-skip", "true");
+    const purge = () => {
+      const selectors = [
+        'style[class^="darkreader"]',
+        'style[data-darkreader-inline]',
+        'link[class^="darkreader"]',
+      ];
+      selectors.forEach((selector) => {
+        document.querySelectorAll(selector).forEach((node) => node.remove());
+      });
+      ["data-darkreader-mode", "data-darkreader-scheme"].forEach((attr) => {
+        if (html.hasAttribute(attr)) html.removeAttribute(attr);
+      });
+      html.style.filter = "none";
+      html.style.backgroundColor = "rgb(175, 212, 207)";
+    };
+    purge();
+    new MutationObserver(purge).observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  })();
+</script>
