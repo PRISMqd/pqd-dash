@@ -68,5 +68,6 @@ export function createMockMedicalDashboardData(): MedicalDashboardData {
       };
     }),
     initialAlertActive: false,
+    bpLevel: "critical",
   };
 }

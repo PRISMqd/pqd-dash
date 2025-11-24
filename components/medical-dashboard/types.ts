@@ -65,4 +65,5 @@ export type MedicalDashboardData = {
   aiInsight: AiInsight;
   policy: PolicyReference;
   initialAlertActive?: boolean;
+  bpLevel?: "normal" | "warning" | "critical";
 };

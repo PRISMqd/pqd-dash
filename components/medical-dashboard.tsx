@@ -315,10 +315,11 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
   }, [vitalSigns.spo2]);
 
   const bpLevel = useMemo<"normal" | "warning" | "critical">(() => {
+    if (data.bpLevel) return data.bpLevel;
     if (vitalSigns.bloodPressure.systolic >= 180) return "critical";
     if (vitalSigns.bloodPressure.systolic >= 150) return "warning";
     return "normal";
-  }, [vitalSigns.bloodPressure.systolic]);
+  }, [data.bpLevel, vitalSigns.bloodPressure.systolic]);
 
   return (
     <div
