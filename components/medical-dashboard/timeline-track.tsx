@@ -23,7 +23,7 @@ export function TimelineTrack({
   return (
     <div
       className={cn(
-        "rounded-full relative flex-1 w-full h-5 bg-[var(--prism-interactive-teal-300)] overflow-hidden px-2",
+        "rounded-full flex items-center justify-between gap-1 flex-1 w-full h-5 bg-[var(--prism-interactive-teal-300)] overflow-hidden px-3",
         className,
       )}
       style={style}
@@ -33,9 +33,8 @@ export function TimelineTrack({
           type="button"
           key={event.id}
           onClick={() => onSelectEventAction(event)}
-          className="absolute top-1/2 w-4 h-4 -mt-2 rounded-full cursor-pointer hover:scale-125 transition-transform hover:ring-2 hover:ring-ring z-20"
+          className="w-4 h-4 rounded-full cursor-pointer hover:scale-125 transition-transform hover:ring-2 hover:ring-ring"
           style={{
-            left: event.time,
             backgroundColor: event.color?.includes("destructive")
               ? criticalFill
               : successFill,
