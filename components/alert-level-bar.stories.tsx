@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { AlertStateProvider } from "@/components/alert-state-context";
 import { AlertLevelBar } from "@/components/alert-level-bar";
+import { AlertStateProvider } from "@/components/alert-state-context";
 
 const meta: Meta<typeof AlertLevelBar> = {
   title: "Monitoring/AlertLevelBar",

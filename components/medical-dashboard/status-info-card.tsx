@@ -2,6 +2,7 @@
 
 import type { CSSProperties, KeyboardEvent } from "react";
 import type { StatusPanelContent } from "@/components/medical-dashboard/types";
+import { useAlertState } from "@/components/alert-state-context";
 import {
   Card,
   CardContent,
@@ -10,7 +11,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAlertState } from "@/components/alert-state-context";
 import { cn } from "@/lib/utils";
 
 export function StatusInfoCard({

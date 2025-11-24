@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import {
-  AlertNotesExpanded,
   AIExpanded,
+  AlertNotesExpanded,
   BodyDiagramExpanded,
+  ClinicianExpandedCard,
   PatientExpanded,
   PolicyExpanded,
   StatusExpanded,
-  ClinicianExpandedCard,
 } from "@/components/medical-dashboard";
 import { createMockMedicalDashboardData } from "@/lib/dal/mock-medical-dashboard";
 
