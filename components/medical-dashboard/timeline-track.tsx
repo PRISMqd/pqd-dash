@@ -23,7 +23,7 @@ export function TimelineTrack({
   return (
     <div
       className={cn(
-        "rounded-full relative flex-1 w-full h-5 bg-[var(--prism-interactive-teal-300)] overflow-hidden",
+        "rounded-full relative flex-1 w-full h-5 bg-[var(--prism-interactive-teal-300)] overflow-hidden px-2",
         className,
       )}
       style={style}
