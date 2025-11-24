@@ -33,6 +33,11 @@ const meta = {
   title: "Medical Dashboard/PolicyInfoCard",
   component: PolicyInfoCard,
   decorators: [
+    (Story) => (
+      <div className="bg-[#afd4cf] text-[#1e2a28] p-4 w-[280px]">
+        <Story />
+      </div>
+    ),
     withReactContext({
       context: AlertStateContext,
       contextValue: createContextValue(false),

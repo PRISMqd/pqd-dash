@@ -6,7 +6,7 @@ experimental = true
 [tools]
 bun = "latest"
 markdownlint-cli2 = "latest"
-node = "22"
+node = "25"
 
 [tasks.install]
 description = "Install frontend dependencies"
@@ -27,6 +27,10 @@ run = "dotenvx run -- bun run build"
 [tasks.start]
 description = "Start the production server"
 run = "dotenvx run -- bun run start"
+
+[tasks.storybook]
+description = "Launch Storybook locally"
+run = "dotenvx run -- bun run storybook"
 
 [tasks.lint]
 description = "Run lint checks"

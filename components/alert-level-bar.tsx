@@ -36,7 +36,7 @@ export function AlertLevelBar({ level, className = "" }: AlertLevelBarProps) {
                 height: `${fillHeight}%`,
                 "--alert-fill": isAlert
                   ? "var(--prism-alarm-red)"
-                  : "var(--prism-teal-100)",
+                  : "var(--prism-teal-300)",
               } as CSSProperties
             }
           />

@@ -1,9 +1,11 @@
 "use client";
 
+import type { ReactNode } from "react";
 import type {
   MedicalDashboardData,
   TimelineEvent,
 } from "@/components/medical-dashboard/types";
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertLevelBar } from "@/components/alert-level-bar";
 import {
@@ -13,13 +15,17 @@ import {
 import { AIInformationCard } from "@/components/medical-dashboard/ai-information-card";
 import { AlertNotesCard } from "@/components/medical-dashboard/alert-notes-card";
 import { BodyDiagramCard } from "@/components/medical-dashboard/body-diagram-card";
-import { ClinicianCard } from "@/components/medical-dashboard/clinician-card";
+import {
+  ClinicianCard,
+  ClinicianExpandedCard,
+} from "@/components/medical-dashboard/clinician-card";
 import { EventDetailsModal } from "@/components/medical-dashboard/event-details-modal";
 import { PatientInfoCard } from "@/components/medical-dashboard/patient-info-card";
 import { PolicyInfoCard } from "@/components/medical-dashboard/policy-info-card";
 import { StatusInfoCard } from "@/components/medical-dashboard/status-info-card";
 import { TimelineTrack } from "@/components/medical-dashboard/timeline-track";
 import { VitalSignsWaveformCard } from "@/components/vital-signs-waveform-card";
+import { cn } from "@/lib/utils";
 
 const VITAL_BASELINES = {
   heartRate: { nominal: 88, avg: 84, alert: 150 },
@@ -33,6 +39,35 @@ type WaveformCardId =
   | "blood-pressure"
   | "blood-volume"
   | "blood-oxygenation";
+
+type DashboardCardId =
+  | "clinician"
+  | "body-diagram"
+  | "patient"
+  | "alert-notes"
+  | "status"
+  | "ai-insight"
+  | "policy";
+
+const CARD_ORIGIN: Record<DashboardCardId, string> = {
+  clinician: "left top",
+  "body-diagram": "left center",
+  patient: "left bottom",
+  "alert-notes": "left bottom",
+  status: "right top",
+  "ai-insight": "right center",
+  policy: "right bottom",
+};
+
+const CARD_ALIGNMENT: Record<DashboardCardId, { justify: string; align: string }> = {
+  clinician: { justify: "start", align: "start" },
+  "body-diagram": { justify: "start", align: "center" },
+  patient: { justify: "start", align: "end" },
+  "alert-notes": { justify: "start", align: "end" },
+  status: { justify: "end", align: "start" },
+  "ai-insight": { justify: "end", align: "center" },
+  policy: { justify: "end", align: "end" },
+};
 
 type WaveformChartConfig = {
   seriesId: "bloodVolume" | "bloodOxygenation" | "ecg" | "bloodPressure";
@@ -112,6 +147,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(
     null,
   );
+  const [activeCard, setActiveCard] = useState<DashboardCardId | null>(null);
   const { isAlert, setIsAlert } = useAlertState();
   const [vitalSigns, setVitalSigns] = useState<VitalSignsState>(
     createInitialVitalSigns,
@@ -202,6 +238,28 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
 
   const alertThreshold = useMemo(() => VITAL_BASELINES.heartRate.alert, []);
 
+  const handleCardSelect = useCallback((card: DashboardCardId) => {
+    setActiveCard((previous) => (previous === card ? null : card));
+  }, []);
+
+  const closeActiveCard = useCallback(() => {
+    setActiveCard(null);
+  }, []);
+
+  useEffect(() => {
+    if (!activeCard) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeActiveCard();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeCard, closeActiveCard]);
+
   const handleEcgSample = useCallback(
     (value: number) => {
       const heartRate = Math.max(50, Math.round(value * 180));
@@ -242,7 +300,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
 
   return (
     <div
-      className={`h-screen w-screen bg-background text-foreground p-5 overflow-hidden ${COLOR_TRANSITION_CLASS}`}
+      className={`relative h-screen w-screen bg-background text-foreground p-5 overflow-hidden ${COLOR_TRANSITION_CLASS}`}
     >
       <div
         className={`grid h-full gap-1.5 ${PANEL_TRANSITION_CLASS}`}
@@ -261,6 +319,8 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
           clinician={data.clinician}
           className={PANEL_TRANSITION_CLASS}
           style={{ gridColumn: 1, gridRow: 2 }}
+          onClick={() => handleCardSelect("clinician")}
+          isActive={activeCard === "clinician"}
         />
 
         <BodyDiagramCard
@@ -269,18 +329,24 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
           }}
           className={PANEL_TRANSITION_CLASS}
           style={{ gridColumn: 1, gridRow: "3 / 7" }}
+          onClick={() => handleCardSelect("body-diagram")}
+          isActive={activeCard === "body-diagram"}
         />
 
         <PatientInfoCard
           patient={data.patient}
           className={PANEL_TRANSITION_CLASS}
           style={{ gridColumn: 1, gridRow: "7 / 8" }}
+          onClick={() => handleCardSelect("patient")}
+          isActive={activeCard === "patient"}
         />
 
         <AlertNotesCard
           config={data.alert}
           className={PANEL_TRANSITION_CLASS}
           style={{ gridColumn: 1, gridRow: "8 / 10" }}
+          onClick={() => handleCardSelect("alert-notes")}
+          isActive={activeCard === "alert-notes"}
         />
 
         <div
@@ -420,6 +486,8 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
           content={data.status}
           className={PANEL_TRANSITION_CLASS}
           style={{ gridColumn: 3, gridRow: 2 }}
+          onClick={() => handleCardSelect("status")}
+          isActive={activeCard === "status"}
         />
 
         <div
@@ -429,6 +497,8 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
           <AIInformationCard
             insight={data.aiInsight}
             className={PANEL_TRANSITION_CLASS}
+            onClick={() => handleCardSelect("ai-insight")}
+            isActive={activeCard === "ai-insight"}
           />
           <AlertLevelBar
             level={isAlert ? 75 : 25}
@@ -440,6 +510,8 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
           policy={data.policy}
           className={PANEL_TRANSITION_CLASS}
           style={{ gridColumn: 3, gridRow: "8 / 11" }}
+          onClick={() => handleCardSelect("policy")}
+          isActive={activeCard === "policy"}
         />
 
         <div
@@ -447,6 +519,19 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
           style={{ gridColumn: "1 / 4", gridRow: 11 }}
         />
       </div>
+
+      {activeCard ? (
+        <ExpandedCardOverlay
+          cardId={activeCard}
+          onClose={closeActiveCard}
+        >
+          {renderExpandedCard({
+            activeCard,
+            data,
+            closeActiveCard,
+          })}
+        </ExpandedCardOverlay>
+      ) : null}
 
       {selectedEvent && (
         <EventDetailsModal
@@ -510,3 +595,315 @@ function VitalSign({
     </div>
   );
 }
+
+type ExpandedCardProps = {
+  activeCard: DashboardCardId;
+  data: MedicalDashboardData;
+  closeActiveCard: () => void;
+};
+
+function renderExpandedCard({
+  activeCard,
+  data,
+  closeActiveCard,
+}: ExpandedCardProps) {
+  switch (activeCard) {
+    case "clinician":
+      return (
+        <ClinicianExpandedCard
+          clinician={data.clinician}
+          onClose={closeActiveCard}
+        />
+      );
+    case "body-diagram":
+      return <BodyDiagramExpanded onClose={closeActiveCard} />;
+    case "patient":
+      return (
+        <PatientExpanded patient={data.patient} onClose={closeActiveCard} />
+      );
+    case "alert-notes":
+      return (
+        <AlertNotesExpanded config={data.alert} onClose={closeActiveCard} />
+      );
+    case "status":
+      return <StatusExpanded content={data.status} onClose={closeActiveCard} />;
+    case "ai-insight":
+      return <AIExpanded insight={data.aiInsight} onClose={closeActiveCard} />;
+    case "policy":
+      return <PolicyExpanded policy={data.policy} onClose={closeActiveCard} />;
+    default:
+      return null;
+  }
+}
+
+function ExpandedCardOverlay({
+  children,
+  cardId,
+  onClose,
+}: {
+  children: ReactNode;
+  cardId: DashboardCardId;
+  onClose: () => void;
+}) {
+  const alignment = CARD_ALIGNMENT[cardId];
+
+  return (
+    <div
+      className={cn(
+        "absolute inset-0 z-30 flex p-2 md:p-4",
+        `items-${alignment.align}`,
+        `justify-${alignment.justify}`,
+      )}
+      role="presentation"
+    >
+      <button
+        type="button"
+        className="absolute inset-0 w-full h-full cursor-default bg-transparent"
+        onClick={onClose}
+        aria-label="Close expanded card"
+      />
+      <div
+        className="relative z-10 pointer-events-auto w-full"
+        style={{ transformOrigin: CARD_ORIGIN[cardId] }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function ExpandedSurface({
+  children,
+  onClose,
+  widthClass = "w-[min(90vw,800px)]",
+}: {
+  children: ReactNode;
+  onClose: () => void;
+  widthClass?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "relative flex flex-col max-w-[calc(100vw-1.5rem)] min-h-[40vh] md:min-h-[45vh] max-h-[calc(100vh-1.5rem)] overflow-auto rounded-2xl border-2 border-[#3F6E67]/70 bg-[#b7d8d1] text-[#1e2a28] shadow-[0_12px_24px_rgba(0,0,0,0.28)] p-6 md:p-8",
+        widthClass,
+        PANEL_TRANSITION_CLASS,
+      )}
+      role="dialog"
+      aria-modal="true"
+      tabIndex={-1}
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute top-4 right-4 text-[#1e2a28]/80 hover:text-[#1e2a28] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#3F6E67]"
+        aria-label="Close expanded view"
+      >
+        <svg
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+      {children}
+    </div>
+  );
+}
+
+const ACTION_STUB_CLASS =
+  "rounded-xl bg-[#7cb7aa] shadow-inner border border-[#6aa194]/60";
+
+const ACTION_STUB_KEYS = [
+  "alpha",
+  "bravo",
+  "charlie",
+  "delta",
+  "echo",
+  "foxtrot",
+];
+
+function ActionStub({ className }: { className?: string }) {
+  return (
+    <button
+      type="button"
+      aria-label="Placeholder action"
+      className={cn(
+        ACTION_STUB_CLASS,
+        "opacity-90 transition hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F6E67]",
+        className,
+      )}
+      disabled
+    />
+  );
+}
+
+function ActionStubRow({
+  count = 4,
+  alignBottom,
+  className,
+}: {
+  count?: number;
+  alignBottom?: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "grid w-full grid-cols-2 sm:grid-cols-4 gap-4",
+        alignBottom ? "mt-auto pt-4" : "mt-6",
+        className,
+      )}
+    >
+      {ACTION_STUB_KEYS.slice(0, count).map((key) => (
+        <ActionStub key={key} className="h-20" />
+      ))}
+    </div>
+  );
+}
+
+function BodyDiagramExpanded({ onClose }: { onClose: () => void }) {
+  return (
+    <ExpandedSurface onClose={onClose} widthClass="w-[min(90vw,520px)]">
+      <div className="relative w-full aspect-[3/4] max-h-[70vh] overflow-hidden rounded-xl border border-[#3F6E67]/60 bg-[#9fcac0]">
+        <Image
+          src="/images/body-diagram.svg"
+          alt="Body diagram expanded"
+          fill
+          priority
+          style={{ objectFit: "cover", pointerEvents: "none" }}
+          sizes="(min-width: 1280px) 420px, 80vw"
+        />
+        <div className="absolute left-4 top-6 flex flex-col gap-4">
+          {ACTION_STUB_KEYS.slice(0, 4).map((key) => (
+            <ActionStub key={key} className="h-16 w-16" />
+          ))}
+        </div>
+      </div>
+    </ExpandedSurface>
+  );
+}
+
+function PatientExpanded({
+  patient,
+  onClose,
+}: {
+  patient: MedicalDashboardData["patient"];
+  onClose: () => void;
+}) {
+  return (
+    <ExpandedSurface onClose={onClose} widthClass="w-[min(88vw,760px)]">
+      <div className="flex flex-col flex-1 h-full gap-4">
+        <div className="space-y-2 text-lg font-semibold">
+          <div>Patient:</div>
+          <div>
+            <span className="font-bold">Name:</span> {patient.name}
+          </div>
+          <div>{`${patient.sex} ${patient.birthDate}`}</div>
+        </div>
+        <div className="flex-1" />
+        <ActionStubRow alignBottom />
+      </div>
+    </ExpandedSurface>
+  );
+}
+
+function AlertNotesExpanded({
+  config,
+  onClose,
+}: {
+  config: MedicalDashboardData["alert"];
+  onClose: () => void;
+}) {
+  return (
+    <ExpandedSurface onClose={onClose} widthClass="w-[min(90vw,880px)]">
+      <div className="flex flex-col flex-1 h-full gap-4">
+        <div className="text-lg font-semibold">Notes:</div>
+        <p className="text-base leading-relaxed">{config.notesPlaceholder}</p>
+        <div className="flex-1" />
+        <ActionStubRow alignBottom />
+      </div>
+    </ExpandedSurface>
+  );
+}
+
+function StatusExpanded({
+  content,
+  onClose,
+}: {
+  content: MedicalDashboardData["status"];
+  onClose: () => void;
+}) {
+  return (
+    <ExpandedSurface onClose={onClose} widthClass="w-[min(88vw,900px)]">
+      <div className="flex flex-col flex-1 h-full gap-4">
+        <div className="text-lg font-semibold">Status:</div>
+        <p className="text-base leading-relaxed">{content.summary}</p>
+        <div className="flex-1" />
+        <ActionStubRow alignBottom />
+      </div>
+    </ExpandedSurface>
+  );
+}
+
+function AIExpanded({
+  insight,
+  onClose,
+}: {
+  insight: MedicalDashboardData["aiInsight"];
+  onClose: () => void;
+}) {
+  return (
+    <ExpandedSurface onClose={onClose} widthClass="w-[min(88vw,900px)]">
+      <div className="flex flex-col flex-1 h-full gap-4">
+        <div className="text-lg font-semibold">{insight.headline}</div>
+        <div className="space-y-2 text-base leading-relaxed">
+          {insight.details.slice(0, 2).map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </div>
+        <div className="flex-1" />
+        <ActionStubRow alignBottom />
+      </div>
+    </ExpandedSurface>
+  );
+}
+
+function PolicyExpanded({
+  policy,
+  onClose,
+}: {
+  policy: MedicalDashboardData["policy"];
+  onClose: () => void;
+}) {
+  return (
+    <ExpandedSurface onClose={onClose} widthClass="w-[min(88vw,900px)]">
+      <div className="flex flex-col flex-1 h-full gap-4">
+        <div className="text-lg font-semibold">Policy Information:</div>
+        <p className="text-base leading-relaxed">{policy.summary}</p>
+        <div className="flex-1" />
+        <ActionStubRow alignBottom />
+      </div>
+    </ExpandedSurface>
+  );
+}
+
+export {
+  ExpandedSurface,
+  ActionStubRow,
+  BodyDiagramExpanded,
+  PatientExpanded,
+  AlertNotesExpanded,
+  StatusExpanded,
+  AIExpanded,
+  PolicyExpanded,
+  ClinicianExpandedCard,
+};
