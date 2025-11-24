@@ -9,15 +9,11 @@ export function TimelineTrack({
   onSelectEventAction,
   className,
   style,
-  tickCount = 10,
-  tickColor = "#4fa86d",
 }: {
   events: TimelineEvent[];
   onSelectEventAction: (event: TimelineEvent) => void;
   className?: string;
   style?: CSSProperties;
-  tickCount?: number;
-  tickColor?: string;
 }) {
   const successFill = "#63c77a";
   const successBorder = "#9de39f";
@@ -32,21 +28,6 @@ export function TimelineTrack({
       )}
       style={style}
     >
-      {[...Array(Math.max(tickCount, 2)).keys()].map((index) => {
-        const position = (index / (Math.max(tickCount, 2) - 1)) * 100;
-        return (
-          <span
-            key={`tick-${index}`}
-            className="absolute top-1/2 -mt-[7px] w-3.5 h-3.5 rounded-full border-[1.5px] shadow-[0_0_0_1px_rgba(0,0,0,0.25)]"
-            style={{
-              left: `${position}%`,
-              backgroundColor: tickColor,
-              borderColor: tickColor,
-            }}
-            aria-hidden
-          />
-        );
-      })}
       {events.map((event) => (
         <button
           type="button"
