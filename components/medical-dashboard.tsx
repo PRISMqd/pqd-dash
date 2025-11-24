@@ -543,13 +543,15 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
   );
 }
 
-function VitalSign({
+export function VitalSign({
   label,
   value,
   subValue,
   avg,
   alert,
   large,
+  glowColor,
+  glowBlur = 14,
 }: {
   label: string;
   value: string;
@@ -557,7 +559,15 @@ function VitalSign({
   avg: string;
   alert?: boolean;
   large?: boolean;
+  glowColor?: string;
+  glowBlur?: number;
 }) {
+  const glowStyle = glowColor
+    ? {
+        textShadow: `0 0 ${glowBlur}px ${glowColor}, 0 0 ${glowBlur * 0.6}px ${glowColor}`,
+      }
+    : undefined;
+
   return (
     <div
       className={`flex flex-col justify-between px-2 py-2 ${PANEL_TRANSITION_CLASS}`}
@@ -574,6 +584,7 @@ function VitalSign({
       >
         <div
           className={`${large ? "text-5xl" : "text-3xl"} font-bold tracking-tight leading-none ${alert ? "text-destructive" : "text-foreground"} whitespace-nowrap ${COLOR_TRANSITION_CLASS}`}
+          style={glowStyle}
         >
           {value}
         </div>
