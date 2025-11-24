@@ -160,6 +160,15 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
   const spo2SamplesRef = useRef<number[]>([]);
   const bloodPressureSamplesRef = useRef<number[]>([]);
 
+  const glowForLevel = useCallback(
+    (level: "normal" | "warning" | "critical") => {
+      if (level === "critical") return "#d14d6c";
+      if (level === "warning") return "#f6db6e";
+      return undefined;
+    },
+    [],
+  );
+
   useEffect(() => {
     const interval = window.setInterval(() => {
       setVitalSigns((previous) => {
@@ -263,21 +272,13 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeCard, closeActiveCard]);
 
-  const handleEcgSample = useCallback(
-    (value: number) => {
-      const heartRate = Math.max(50, Math.round(value * 180));
-      ecgSamplesRef.current.push(value);
-      if (ecgSamplesRef.current.length > 200) {
-        ecgSamplesRef.current = ecgSamplesRef.current.slice(-200);
-      }
-
-      const alertActive = heartRate >= alertThreshold;
-      if (alertActive) {
-        setIsAlert(true);
-      }
-    },
-    [alertThreshold, setIsAlert],
-  );
+  const handleEcgSample = useCallback((value: number) => {
+    const _heartRate = Math.max(50, Math.round(value * 180));
+    ecgSamplesRef.current.push(value);
+    if (ecgSamplesRef.current.length > 200) {
+      ecgSamplesRef.current = ecgSamplesRef.current.slice(-200);
+    }
+  }, []);
 
   const handleBloodPressureSample = useCallback((value: number) => {
     bloodPressureSamplesRef.current.push(value);
@@ -300,6 +301,24 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
       spo2SamplesRef.current = spo2SamplesRef.current.slice(-200);
     }
   }, []);
+
+  const heartRateLevel = useMemo<"normal" | "warning" | "critical">(() => {
+    if (vitalSigns.heartRate >= alertThreshold) return "critical";
+    if (vitalSigns.heartRate >= alertThreshold * 0.75) return "warning";
+    return "normal";
+  }, [alertThreshold, vitalSigns.heartRate]);
+
+  const spo2Level = useMemo<"normal" | "warning" | "critical">(() => {
+    if (vitalSigns.spo2 <= 90) return "critical";
+    if (vitalSigns.spo2 <= 94) return "warning";
+    return "normal";
+  }, [vitalSigns.spo2]);
+
+  const bpLevel = useMemo<"normal" | "warning" | "critical">(() => {
+    if (vitalSigns.bloodPressure.systolic >= 180) return "critical";
+    if (vitalSigns.bloodPressure.systolic >= 150) return "warning";
+    return "normal";
+  }, [vitalSigns.bloodPressure.systolic]);
 
   return (
     <div
@@ -369,20 +388,25 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
                 label="HR"
                 value={vitalSigns.heartRate.toString()}
                 avg={vitalSigns.heartRateAvg.toString()}
-                alert={isAlert}
+                alert={heartRateLevel === "critical"}
                 large
+                glowColor={glowForLevel(heartRateLevel)}
               />
             </div>
             <VitalSign
               label="SpO2"
               value={`${vitalSigns.spo2}%`}
               avg={`${vitalSigns.spo2Avg}%`}
+              alert={spo2Level === "critical"}
+              glowColor={glowForLevel(spo2Level)}
             />
             <VitalSign
               label="BP"
               value={vitalSigns.bloodPressure.systolic.toString()}
               subValue={vitalSigns.bloodPressure.diastolic.toString()}
               avg={`${vitalSigns.bloodPressure.systolic}/${vitalSigns.bloodPressure.diastolic}`}
+              alert={bpLevel === "critical"}
+              glowColor={glowForLevel(bpLevel)}
             />
             <VitalSign label="EtCO2" value="40" avg="40" />
           </div>
@@ -401,6 +425,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
               displayValue={`${vitalSigns.bloodPressure.systolic}/${vitalSigns.bloodPressure.diastolic}`}
               style={{ height: "100%" }}
               onSampleAction={handleBloodPressureSample}
+              alertLevel={bpLevel}
             />
           </div>
           <div className={`${PANEL_TRANSITION_CLASS} h-full`}>
@@ -411,6 +436,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
               showDelta={true}
               style={{ height: "100%" }}
               onSampleAction={handleBloodVolumeSample}
+              alertLevel="normal"
             />
           </div>
           <div className={`${PANEL_TRANSITION_CLASS} h-full`}>
@@ -422,6 +448,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
               displayValue={vitalSigns.heartRate.toString()}
               style={{ height: "100%" }}
               onSampleAction={handleEcgSample}
+              alertLevel={heartRateLevel}
             />
           </div>
           <div className={`${PANEL_TRANSITION_CLASS} h-full`}>
@@ -433,6 +460,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
               displayValue={vitalSigns.heartRate.toString()}
               style={{ height: "100%" }}
               onSampleAction={handleEcgSample}
+              alertLevel={heartRateLevel}
             />
           </div>
           <div className={`${PANEL_TRANSITION_CLASS} h-full`}>
@@ -444,6 +472,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
               displayValue={vitalSigns.spo2.toString()}
               style={{ height: "100%" }}
               onSampleAction={handleBloodOxygenSample}
+              alertLevel={spo2Level}
             />
           </div>
           <div className={`${PANEL_TRANSITION_CLASS} h-full`}>
@@ -482,6 +511,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
             displayValue={vitalSigns.heartRate.toString()}
             style={{ height: "100%" }}
             onSampleAction={handleEcgSample}
+            alertLevel={heartRateLevel}
           />
         </div>
 

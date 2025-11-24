@@ -52,6 +52,7 @@ export type VitalSignsWaveformCardProps = {
   showDelta?: boolean;
   style?: CSSProperties;
   onSampleAction?: (value: number) => void;
+  alertLevel?: "normal" | "warning" | "critical";
 };
 
 export function VitalSignsWaveformCard({
@@ -63,6 +64,7 @@ export function VitalSignsWaveformCard({
   showDelta = false,
   style,
   onSampleAction: onSample,
+  alertLevel,
 }: VitalSignsWaveformCardProps) {
   const [currentValue, setCurrentValue] = useState<number>(0);
 
@@ -197,6 +199,27 @@ export function VitalSignsWaveformCard({
     }
   };
 
+  const effectiveLevel = alertLevel ?? "normal";
+
+  const levelColor = (() => {
+    if (effectiveLevel === "critical") return "#c22d4d";
+    if (effectiveLevel === "warning") return "#d1c247";
+    return config.strokeColor;
+  })();
+
+  const valueBg = (() => {
+    if (effectiveLevel === "critical") return "#c22d4d";
+    if (effectiveLevel === "warning") return "#d1c247";
+    return "#7BB8A9";
+  })();
+
+  const valueText =
+    effectiveLevel === "critical"
+      ? "#fff7f8"
+      : effectiveLevel === "warning"
+        ? "#1e2a28"
+        : "#1E2A28";
+
   return (
     <div
       id={chartId}
@@ -206,10 +229,10 @@ export function VitalSignsWaveformCard({
     >
       {/* Left handle bar from PDF */}
       <div
-        className="w-3 rounded-md opacity-50 bg-(--waveform-stroke)"
+        className="w-3 rounded-md opacity-80"
         style={
           {
-            "--waveform-stroke": config.strokeColor,
+            backgroundColor: levelColor,
           } as CSSProperties
         }
       />
@@ -220,17 +243,31 @@ export function VitalSignsWaveformCard({
       </div>
 
       {/* Value display box on the right */}
-      <div className="bg-[#7BB8A9]/20 rounded-lg px-3 py-2 flex flex-col items-center justify-center min-w-20">
+      <div
+        className="rounded-lg px-3 py-2 flex flex-col items-center justify-center min-w-20"
+        style={{
+          backgroundColor:
+            effectiveLevel === "normal" ? `${valueBg}33` : `${valueBg}cc`,
+        }}
+      >
         {label && (
-          <div className="text-[10px] font-medium text-[#3F6E67] uppercase tracking-wider mb-1">
+          <div
+            className="text-[10px] font-medium uppercase tracking-wider mb-1"
+            style={{ color: valueText }}
+          >
             {label}
           </div>
         )}
-        <div className="text-2xl font-bold text-[#1E2A28] leading-none">
+        <div
+          className="text-2xl font-bold leading-none"
+          style={{ color: valueText }}
+        >
           {showDelta ? "Δ" : (displayValue ?? formatValue(currentValue))}
         </div>
         {unit && !showDelta && (
-          <div className="text-xs text-[#3F6E67] mt-0.5">{unit}</div>
+          <div className="text-xs mt-0.5" style={{ color: valueText }}>
+            {unit}
+          </div>
         )}
       </div>
     </div>

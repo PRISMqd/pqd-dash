@@ -51,38 +51,22 @@ export function createMockMedicalDashboardData(): MedicalDashboardData {
         "Follow Acute Coronary Syndrome rapid response pathway: activate cath lab if ST elevation persists 10 minutes after nitroglycerin.",
       actionLabel: "View ACS Protocol",
     },
-    timelineEvents: [
-      {
-        id: 1,
-        time: "10%",
-        color: "bg-destructive",
-        timestamp: "14:23:15",
-        type: "Critical Alert",
-        description:
-          "Heart rate exceeded 150 bpm for 90 seconds post-ambulation while ST elevation persisted.",
-        vitals: { HR: 152, BP: "128/86", SpO2: "94%" },
-      },
-      {
-        id: 2,
-        time: "46%",
-        color: "bg-warning",
-        timestamp: "14:45:32",
-        type: "Warning",
-        description:
-          "Respiratory rate trending upward with shallow tidal volume; tidal CO₂ dropped 3 mmHg.",
-        vitals: { RR: 32, Temp: "99.1°F", SpO2: "95%" },
-      },
-      {
-        id: 3,
-        time: "63%",
-        color: "bg-warning",
-        timestamp: "15:12:08",
-        type: "Warning",
-        description:
-          "Blood pressure variability increased following nitroglycerin dose; MAP stable at 101.",
-        vitals: { BP: "130/88", HR: 145, MAP: 101 },
-      },
-    ],
+    timelineEvents: Array.from({ length: 10 }).map((_, index, arr) => {
+      const critical = index === 2;
+      return {
+        id: index + 1,
+        time: `${(index / (arr.length - 1)) * 100}%`,
+        color: critical ? "bg-destructive" : "bg-success",
+        timestamp: `14:${20 + index}:00`,
+        type: critical ? "Critical Alert" : "Telemetry",
+        description: critical
+          ? "Critical alert captured by timeline marker."
+          : "Routine telemetry checkpoint.",
+        vitals: critical
+          ? { HR: 150 + index, BP: "128/86", SpO2: "94%" }
+          : { HR: 90 + index, BP: "120/80", SpO2: "97%" },
+      };
+    }),
     initialAlertActive: false,
   };
 }
