@@ -96,7 +96,6 @@
   --scrollbar-thumb-hover: var(--prism-interactive-teal-300);
 }
 
-
 .dark {
   /* Dark mode (if enabled) - inverted from light theme */
   --background: var(--prism-gray-900);

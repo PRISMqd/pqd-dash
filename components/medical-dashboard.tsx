@@ -59,7 +59,10 @@ const CARD_ORIGIN: Record<DashboardCardId, string> = {
   policy: "right bottom",
 };
 
-const CARD_ALIGNMENT: Record<DashboardCardId, { justify: string; align: string }> = {
+const CARD_ALIGNMENT: Record<
+  DashboardCardId,
+  { justify: string; align: string }
+> = {
   clinician: { justify: "start", align: "start" },
   "body-diagram": { justify: "start", align: "center" },
   patient: { justify: "start", align: "end" },
@@ -521,10 +524,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
       </div>
 
       {activeCard ? (
-        <ExpandedCardOverlay
-          cardId={activeCard}
-          onClose={closeActiveCard}
-        >
+        <ExpandedCardOverlay cardId={activeCard} onClose={closeActiveCard}>
           {renderExpandedCard({
             activeCard,
             data,

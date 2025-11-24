@@ -51,7 +51,8 @@ export function StatusInfoCard({
         "flex-1 min-h-0 gap-0 py-0 bg-transparent border-[#3F6E67]/40 text-foreground",
         onClick &&
           "cursor-pointer hover:border-primary/70 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-0",
-        isActive && "border-primary/80 shadow-[0_6px_16px_rgba(0,0,0,0.35)] bg-[#d6e8e3]",
+        isActive &&
+          "border-primary/80 shadow-[0_6px_16px_rgba(0,0,0,0.35)] bg-[#d6e8e3]",
         alertActive &&
           "bg-[var(--prism-alarm-red)] text-[var(--prism-alarm-red-foreground)] border-[color-mix(in_oklab,var(--prism-alarm-red)_70%,#000_30%)]",
         className,
@@ -59,7 +60,7 @@ export function StatusInfoCard({
       style={{ ...style, color: textColor }}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
-      aria-pressed={onClick ? isActive ?? false : undefined}
+      aria-pressed={onClick ? (isActive ?? false) : undefined}
       onClick={onClick}
       onKeyDown={handleKeyDown}
     >

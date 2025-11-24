@@ -41,13 +41,14 @@ export function BodyDiagramCard({
         "bg-transparent border-[#3F6E67]/40 p-0 flex items-center justify-center w-full h-full min-h-[300px] overflow-hidden",
         onClick &&
           "cursor-pointer hover:border-primary/70 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-0",
-        isActive && "border-primary/80 shadow-[0_6px_16px_rgba(0,0,0,0.35)] bg-[#d6e8e3]",
+        isActive &&
+          "border-primary/80 shadow-[0_6px_16px_rgba(0,0,0,0.35)] bg-[#d6e8e3]",
         className,
       )}
       style={style}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
-      aria-pressed={onClick ? isActive ?? false : undefined}
+      aria-pressed={onClick ? (isActive ?? false) : undefined}
       onClick={onClick}
       onKeyDown={handleKeyDown}
     >
