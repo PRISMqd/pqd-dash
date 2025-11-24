@@ -13,6 +13,10 @@ const events = Array.from({ length: 10 }).map((_, index, arr) => ({
   vitals: {},
 }));
 
+const alertEvents = events.map((event, idx) =>
+  idx % 3 === 1 ? { ...event, color: "bg-destructive", type: "Alert" } : event,
+);
+
 const meta: Meta<typeof TimelineTrack> = {
   title: "Medical Dashboard/TimelineTrack",
   component: TimelineTrack,
@@ -30,6 +34,30 @@ export default meta;
 type Story = StoryObj<typeof TimelineTrack>;
 
 export const Default: Story = {
+  render: (args) => (
+    <div style={{ width: 480 }}>
+      <TimelineTrack {...args} />
+    </div>
+  ),
+};
+
+export const AlertMixed: Story = {
+  args: {
+    events: alertEvents,
+  },
+  render: (args) => (
+    <div style={{ width: 480 }}>
+      <TimelineTrack {...args} />
+    </div>
+  ),
+};
+
+export const DenseAlerts: Story = {
+  args: {
+    events: alertEvents.map((event, idx) =>
+      idx % 2 === 0 ? { ...event, color: "bg-destructive" } : event,
+    ),
+  },
   render: (args) => (
     <div style={{ width: 480 }}>
       <TimelineTrack {...args} />
