@@ -12,7 +12,10 @@ const meta: Meta<typeof AlertNotesCard> = {
     config: mockData.alert,
   },
   argTypes: {
-    config: { control: "object" },
+    config: {
+      control: "object",
+      description: "Alert + notes copy and placeholders",
+    },
   },
 };
 

@@ -1,27 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { withReactContext } from "storybook-react-context/dist/decorator.js";
-import { AlertStateContext } from "@/components/alert-state-context";
+import { AlertStateProvider } from "@/components/alert-state-context";
 import { StatusInfoCard } from "@/components/medical-dashboard/status-info-card";
 import { createMockMedicalDashboardData } from "@/lib/dal/mock-medical-dashboard";
-
-type ContextFactoryArgs = {
-  args?: { isAlert?: boolean };
-  updateArgs: (nextArgs: { isAlert: boolean }) => void;
-};
-
-const createContextValue =
-  (initial: boolean) =>
-  ({ args, updateArgs }: ContextFactoryArgs) => {
-    const current = typeof args?.isAlert === "boolean" ? args.isAlert : initial;
-
-    return {
-      isAlert: current,
-      setIsAlert: (next: boolean | ((previous: boolean) => boolean)) => {
-        const value = typeof next === "function" ? next(current) : next;
-        updateArgs({ isAlert: value });
-      },
-    };
-  };
 
 const mockData = createMockMedicalDashboardData();
 
@@ -33,26 +13,37 @@ const meta = {
   title: "Medical Dashboard/StatusInfoCard",
   component: StatusInfoCard,
   decorators: [
-    (Story) => (
-      <div className="bg-[#afd4cf] text-[#1e2a28] p-4 w-[280px]">
-        <Story />
-      </div>
+    (Story, context) => (
+      <AlertStateProvider initialAlert={context.args.isAlert ?? false}>
+        <div className="bg-[#afd4cf] text-[#1e2a28] p-4 w-[320px]">
+          <Story />
+        </div>
+      </AlertStateProvider>
     ),
-    withReactContext({
-      context: AlertStateContext,
-      contextValue: createContextValue(false),
-    }),
   ],
   args: {
     isAlert: false,
     content: mockData.status,
+    maxContentHeight: "8rem",
+    minContentHeight: "3.5rem",
   },
   argTypes: {
     isAlert: {
       control: { type: "boolean" },
       description: "Toggle the alert state context",
     },
-    content: { control: "object" },
+    content: {
+      control: "object",
+      description: "Status panel content (summary/actionLabel)",
+    },
+    maxContentHeight: {
+      control: "text",
+      description: "Max height for scrollable content area",
+    },
+    minContentHeight: {
+      control: "text",
+      description: "Min height for scrollable content area",
+    },
   },
   parameters: {
     layout: "centered",
@@ -69,11 +60,6 @@ export const Default: Story = {
 export const AlertState: Story = {
   args: {
     isAlert: true,
-  },
-  parameters: {
-    reactContext: {
-      contextValue: createContextValue(true),
-    },
   },
   render: ({ isAlert: _unused, ...props }) => <StatusInfoCard {...props} />,
 };

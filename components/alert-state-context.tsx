@@ -28,6 +28,10 @@ export function AlertStateProvider({
   const [isAlert, setIsAlert] = useState(initialAlert);
   const [alertLevel, setAlertLevel] = useState<AlertLevel>(initialLevel);
 
+  useEffect(() => {
+    setIsAlert(initialAlert);
+  }, [initialAlert]);
+
   // Update body background based on alert level
   useEffect(() => {
     const root = document.documentElement;

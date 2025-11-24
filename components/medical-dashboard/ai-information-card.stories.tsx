@@ -54,7 +54,10 @@ const meta = {
       control: { type: "boolean" },
       description: "Toggle the alert state context",
     },
-    insight: { control: "object" },
+    insight: {
+      control: "object",
+      description: "AI insight content (headline, details, recommendations)",
+    },
   },
   parameters: {
     layout: "centered",

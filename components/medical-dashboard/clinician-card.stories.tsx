@@ -10,6 +10,12 @@ const meta: Meta<typeof ClinicianCard> = {
   args: {
     clinician: mockData.clinician,
   },
+  argTypes: {
+    clinician: {
+      control: "object",
+      description: "Clinician details shown in the card",
+    },
+  },
   decorators: [
     (Story) => (
       <div className="bg-[#afd4cf] text-[#1e2a28] p-4 w-[280px]">

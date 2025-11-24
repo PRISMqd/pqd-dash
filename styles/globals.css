@@ -43,6 +43,7 @@
   --prism-alarm-green: rgb(33, 143, 103); /* #218F67 - medical green */
   --prism-alarm-yellow: rgb(209, 194, 71); /* #D1C247 - warning yellow */
   --prism-alarm-red: rgb(194, 45, 77); /* #C22D4D - critical red */
+  --prism-alarm-red-foreground: rgb(255, 247, 248);
   --prism-alarm-blue: rgb(75, 144, 166); /* #4B90A6 - info blue */
 
   /* Shadcn/UI Semantic Tokens - Mapped to PRISM Design System */
@@ -189,6 +190,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
+
 
 @layer base {
   * {

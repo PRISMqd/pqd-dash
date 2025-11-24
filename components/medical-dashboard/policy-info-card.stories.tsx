@@ -52,7 +52,10 @@ const meta = {
       control: { type: "boolean" },
       description: "Toggle the alert state context",
     },
-    policy: { control: "object" },
+    policy: {
+      control: "object",
+      description: "Policy reference content",
+    },
   },
   parameters: {
     layout: "centered",

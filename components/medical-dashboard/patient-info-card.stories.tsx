@@ -11,6 +11,12 @@ const meta: Meta<typeof PatientInfoCard> = {
       birthDate: "6/11/75",
     },
   },
+  argTypes: {
+    patient: {
+      control: "object",
+      description: "Patient content shown in the card",
+    },
+  },
   decorators: [
     (Story) => (
       <div className="bg-[#afd4cf] text-[#1e2a28] p-4 w-[280px]">

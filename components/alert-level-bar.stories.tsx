@@ -9,6 +9,7 @@ const meta: Meta<typeof AlertLevelBar> = {
     level: 60,
     className: "h-40",
     alert: false,
+    alertOverride: undefined,
   },
   argTypes: {
     level: {
@@ -17,6 +18,10 @@ const meta: Meta<typeof AlertLevelBar> = {
     alert: {
       control: { type: "boolean" },
       description: "Wraps the bar in AlertStateProvider to show alert fill",
+    },
+    alertOverride: {
+      control: { type: "boolean" },
+      description: "Force alert coloring without changing context",
     },
   },
   decorators: [
@@ -54,6 +59,16 @@ export const AlertActive: Story = {
   args: {
     level: 75,
     alert: true,
+    alertOverride: undefined,
+    className: "h-40",
+  },
+};
+
+export const ForcedAlert: Story = {
+  args: {
+    level: 50,
+    alert: false,
+    alertOverride: true,
     className: "h-40",
   },
 };

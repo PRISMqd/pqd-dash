@@ -43,6 +43,7 @@
   --prism-alarm-green: #218f67; /* medical green from PDF */
   --prism-alarm-yellow: #d1c247; /* warning yellow from PDF */
   --prism-alarm-red: #c22d4d; /* critical red from PDF */
+  --prism-alarm-red-foreground: #fff7f8;
   --prism-alarm-blue: #4b90a6; /* info blue from PDF */
 
   /* Shadcn/UI Semantic Tokens - Mapped to PRISM Design System */
@@ -94,6 +95,7 @@
   --scrollbar-thumb: var(--prism-interactive-teal-200);
   --scrollbar-thumb-hover: var(--prism-interactive-teal-300);
 }
+
 
 .dark {
   /* Dark mode (if enabled) - inverted from light theme */
