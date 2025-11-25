@@ -64,6 +64,7 @@ export function StatusInfoCard({
 
   const level = alertActive ? "critical" : (alertLevel ?? "normal");
   const { bg, border, text } = levelColors[level] ?? levelColors.normal;
+  const appliedBorder = border;
 
   return (
     <Card
@@ -71,18 +72,14 @@ export function StatusInfoCard({
         "flex-1 min-h-0 gap-0 py-0 text-foreground",
         onClick &&
           "cursor-pointer hover:border-primary/70 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-0",
-        isActive &&
-          "border-primary/80 shadow-[0_6px_16px_rgba(0,0,0,0.35)] bg-[#d6e8e3]",
+        isActive && "shadow-[0_6px_16px_rgba(0,0,0,0.35)]",
         className,
       )}
       style={{
         ...style,
         color: text,
-        borderColor: border,
+        borderColor: appliedBorder,
         backgroundColor: bg,
-        borderWidth: "1.5px",
-        boxShadow: "var(--dl-shadow)",
-        borderRadius: "var(--dl-radius)",
       }}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
