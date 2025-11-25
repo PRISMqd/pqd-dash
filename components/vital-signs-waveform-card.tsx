@@ -202,15 +202,15 @@ export function VitalSignsWaveformCard({
   const effectiveLevel = alertLevel ?? "normal";
 
   const levelColor = (() => {
-    if (effectiveLevel === "critical") return "#c22d4d";
-    if (effectiveLevel === "warning") return "#d1c247";
+    if (effectiveLevel === "critical") return "var(--dl-crisis)";
+    if (effectiveLevel === "warning") return "var(--dl-warning)";
     return config.strokeColor;
   })();
 
   const valueBg = (() => {
-    if (effectiveLevel === "critical") return "#c22d4d";
-    if (effectiveLevel === "warning") return "#d1c247";
-    return "#7BB8A9";
+    if (effectiveLevel === "critical") return "var(--dl-crisis)";
+    if (effectiveLevel === "warning") return "var(--dl-warning)";
+    return "var(--dl-highlight-light)";
   })();
 
   const valueText =

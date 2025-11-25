@@ -47,16 +47,16 @@ export function StatusInfoCard({
   > = {
     normal: {
       bg: "transparent",
-      border: "#3F6E67",
-      text: "var(--foreground)",
+      border: "var(--dl-stable)",
+      text: "var(--dl-text-primary)",
     },
     warning: {
-      bg: "#d1c247",
+      bg: "var(--dl-warning)",
       border: "#928523",
-      text: "#1e2a28",
+      text: "var(--dl-text-primary)",
     },
     critical: {
-      bg: "#c22d4d",
+      bg: "var(--dl-crisis)",
       border: "#8d1f3b",
       text: "var(--prism-alarm-red-foreground)",
     },

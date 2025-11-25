@@ -59,7 +59,7 @@ const CARD_ORIGIN: Record<DashboardCardId, string> = {
   policy: "right bottom",
 };
 
-const CARD_ALIGNMENT: Record<
+const _CARD_ALIGNMENT: Record<
   DashboardCardId,
   { justify: string; align: string }
 > = {
@@ -162,8 +162,8 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
 
   const glowForLevel = useCallback(
     (level: "normal" | "warning" | "critical") => {
-      if (level === "critical") return "#d14d6c";
-      if (level === "warning") return "#f6db6e";
+      if (level === "critical") return "var(--dl-crisis)";
+      if (level === "warning") return "var(--dl-warning)";
       return undefined;
     },
     [],
@@ -323,7 +323,8 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
 
   return (
     <div
-      className={`relative h-screen w-screen bg-background text-foreground p-5 overflow-hidden ${COLOR_TRANSITION_CLASS}`}
+      className={`relative h-screen w-screen bg-background text-foreground overflow-hidden ${COLOR_TRANSITION_CLASS}`}
+      style={{ padding: "var(--dl-space-padding)" }}
     >
       <div
         className={`grid h-full gap-1.5 ${PANEL_TRANSITION_CLASS}`}
@@ -687,15 +688,9 @@ function ExpandedCardOverlay({
   cardId: DashboardCardId;
   onClose: () => void;
 }) {
-  const alignment = CARD_ALIGNMENT[cardId];
-
   return (
     <div
-      className={cn(
-        "absolute inset-0 z-30 flex p-2 md:p-4",
-        `items-${alignment.align}`,
-        `justify-${alignment.justify}`,
-      )}
+      className="fixed inset-0 z-30 flex items-center justify-center p-3 md:p-6"
       role="presentation"
     >
       <button
@@ -717,7 +712,7 @@ function ExpandedCardOverlay({
 function ExpandedSurface({
   children,
   onClose,
-  widthClass = "w-[min(90vw,800px)]",
+  widthClass = "w-[min(80vw,1100px)]",
 }: {
   children: ReactNode;
   onClose: () => void;
@@ -726,13 +721,21 @@ function ExpandedSurface({
   return (
     <div
       className={cn(
-        "relative flex flex-col max-w-[calc(100vw-1.5rem)] min-h-[40vh] md:min-h-[45vh] max-h-[calc(100vh-1.5rem)] overflow-auto rounded-2xl border-2 border-[#3F6E67]/70 bg-[#b7d8d1] text-[#1e2a28] shadow-[0_12px_24px_rgba(0,0,0,0.28)] p-6 md:p-8",
+        "relative flex flex-col max-w-[calc(100vw-1.5rem)] min-h-[40vh] md:min-h-[45vh] max-h-[calc(100vh-1.5rem)] overflow-auto",
         widthClass,
         PANEL_TRANSITION_CLASS,
       )}
       role="dialog"
       aria-modal="true"
       tabIndex={-1}
+      style={{
+        borderRadius: "var(--dl-radius)",
+        border: "2px solid #3F6E67",
+        boxShadow: "var(--dl-shadow)",
+        backgroundColor: "#b7d8d1",
+        color: "#1e2a28",
+        padding: "calc(var(--dl-space-padding) + 8px)",
+      }}
     >
       <button
         type="button"

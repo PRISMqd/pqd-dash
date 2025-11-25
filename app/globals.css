@@ -46,6 +46,24 @@
   --prism-alarm-red-foreground: #fff7f8;
   --prism-alarm-blue: #4b90a6; /* info blue from PDF */
 
+  /* Design language tokens (PRISMqd v1.3) */
+  --dl-primary-base: #bad6d2;
+  --dl-accent-neutral: #afd4cf;
+  --dl-highlight-light: #a7e0e5;
+  --dl-text-primary: #1c2625;
+  --dl-stable: #218f67;
+  --dl-warning: #d1c247;
+  --dl-crisis: #c22d4d;
+  --dl-critical-dark: #1c2625;
+  --dl-offline: #c7c7c7;
+  --dl-info-neutral: #4a7f90;
+  --dl-panel-bg: #f9fafa;
+  --dl-space-unit: 4px;
+  --dl-space-gutter: 16px;
+  --dl-space-padding: 20px;
+  --dl-radius: 12px;
+  --dl-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+
   /* Shadcn/UI Semantic Tokens - Mapped to PRISM Design System */
   /* Per PDF pages 2-5: pastel teal bg + light teal cards (NOT white) */
   --background: var(--prism-teal-100); /* #AFD4CF - soft pastel teal page bg */
