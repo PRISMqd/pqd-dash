@@ -63,6 +63,8 @@
   --dl-space-padding: 20px;
   --dl-radius: 12px;
   --dl-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --dl-font-primary: "Inter", "Source Sans Pro", sans-serif;
+  --dl-font-numeric: "Roboto Mono", monospace;
 
   /* Shadcn/UI Semantic Tokens - Mapped to PRISM Design System */
   /* Per PDF pages 2-5: pastel teal bg + light teal cards (NOT white) */
