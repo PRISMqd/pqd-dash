@@ -327,11 +327,12 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
       style={{ padding: "var(--dl-space-padding)" }}
     >
       <div
-        className={`grid h-full gap-1.5 ${PANEL_TRANSITION_CLASS}`}
+        className={`grid h-full ${PANEL_TRANSITION_CLASS}`}
         style={{
           gridTemplateColumns: "240px 1fr 280px",
           gridTemplateRows:
             "2rem minmax(4.5rem, auto) repeat(7, minmax(0, 1fr)) auto 2rem",
+          gap: "var(--dl-space-gutter)",
         }}
       >
         <div
@@ -374,10 +375,17 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
         />
 
         <div
-          className={`px-1.5 py-1.5 ${PANEL_TRANSITION_CLASS}`}
-          style={{ gridColumn: 2, gridRow: 2 }}
+          className={`${PANEL_TRANSITION_CLASS}`}
+          style={{
+            gridColumn: 2,
+            gridRow: 2,
+            padding: "var(--dl-space-unit) * 2",
+          }}
         >
-          <div className={`grid grid-cols-8 gap-3 ${COLOR_TRANSITION_CLASS}`}>
+          <div
+            className={`grid grid-cols-8 ${COLOR_TRANSITION_CLASS}`}
+            style={{ gap: "var(--dl-space-gutter)" }}
+          >
             <VitalSign label="SV" value="87.0" avg="88.0" />
             <VitalSign label="Temp" value="98.4°" avg="98.4" />
             <VitalSign
@@ -689,21 +697,15 @@ function ExpandedCardOverlay({
   onClose: () => void;
 }) {
   return (
-    <div
-      className="fixed inset-0 z-30 flex items-center justify-center p-3 md:p-6"
-      role="presentation"
-    >
+    <div className="fixed inset-0 z-30 p-3 md:p-6" role="presentation">
       <button
         type="button"
         className="absolute inset-0 w-full h-full cursor-default bg-transparent"
         onClick={onClose}
         aria-label="Close expanded card"
       />
-      <div
-        className="relative z-10 pointer-events-auto w-full"
-        style={{ transformOrigin: CARD_ORIGIN[cardId] }}
-      >
-        {children}
+      <div className="relative z-10 pointer-events-auto w-full flex items-start justify-end">
+        <div style={{ transformOrigin: CARD_ORIGIN[cardId] }}>{children}</div>
       </div>
     </div>
   );
