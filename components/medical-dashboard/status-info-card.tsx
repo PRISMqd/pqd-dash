@@ -46,7 +46,7 @@ export function StatusInfoCard({
     { bg: string; border: string; text: string }
   > = {
     normal: {
-      bg: "transparent",
+      bg: "var(--dl-accent-neutral)",
       border: "var(--dl-stable)",
       text: "var(--dl-text-primary)",
     },
@@ -68,7 +68,7 @@ export function StatusInfoCard({
   return (
     <Card
       className={cn(
-        "flex-1 min-h-0 gap-0 py-0 bg-transparent border-[1.5px] text-foreground",
+        "flex-1 min-h-0 gap-0 py-0 text-foreground",
         onClick &&
           "cursor-pointer hover:border-primary/70 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-0",
         isActive &&
@@ -80,6 +80,9 @@ export function StatusInfoCard({
         color: text,
         borderColor: border,
         backgroundColor: bg,
+        borderWidth: "1.5px",
+        boxShadow: "var(--dl-shadow)",
+        borderRadius: "var(--dl-radius)",
       }}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}

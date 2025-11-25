@@ -204,21 +204,21 @@ export function VitalSignsWaveformCard({
   const levelColor = (() => {
     if (effectiveLevel === "critical") return "var(--dl-crisis)";
     if (effectiveLevel === "warning") return "var(--dl-warning)";
-    return config.strokeColor;
+    return "var(--dl-accent-neutral)";
   })();
 
   const valueBg = (() => {
     if (effectiveLevel === "critical") return "var(--dl-crisis)";
     if (effectiveLevel === "warning") return "var(--dl-warning)";
-    return "var(--dl-highlight-light)";
+    return "var(--dl-accent-neutral)";
   })();
 
   const valueText =
     effectiveLevel === "critical"
       ? "#fff7f8"
       : effectiveLevel === "warning"
-        ? "#1e2a28"
-        : "#1E2A28";
+        ? "var(--dl-text-primary)"
+        : "#ffffff";
 
   return (
     <div
@@ -229,7 +229,7 @@ export function VitalSignsWaveformCard({
     >
       {/* Left handle bar from PDF */}
       <div
-        className="w-3 rounded-md opacity-80"
+        className="w-3 rounded-md opacity-90"
         style={
           {
             backgroundColor: levelColor,
@@ -246,8 +246,7 @@ export function VitalSignsWaveformCard({
       <div
         className="rounded-lg px-3 py-2 flex flex-col items-center justify-center min-w-20"
         style={{
-          backgroundColor:
-            effectiveLevel === "normal" ? `${valueBg}33` : `${valueBg}cc`,
+          backgroundColor: valueBg,
         }}
       >
         {label && (
