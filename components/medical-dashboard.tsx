@@ -152,6 +152,9 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
   );
   const [activeCard, setActiveCard] = useState<DashboardCardId | null>(null);
   const { isAlert, setIsAlert } = useAlertState();
+  const [sensorAlertLevel, setSensorAlertLevel] = useState<
+    "normal" | "warning" | "critical"
+  >("warning");
   const [vitalSigns, setVitalSigns] = useState<VitalSignsState>(
     createInitialVitalSigns,
   );
@@ -254,6 +257,20 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
     setActiveCard((previous) => (previous === card ? null : card));
   }, []);
 
+  const cycleSensorAlert = useCallback(() => {
+    setSensorAlertLevel((current) => {
+      if (current === "normal") {
+        setIsAlert(true);
+        return "warning";
+      }
+      if (current === "warning") {
+        return "critical";
+      }
+      setIsAlert(false);
+      return "normal";
+    });
+  }, [setIsAlert]);
+
   const closeActiveCard = useCallback(() => {
     setActiveCard(null);
   }, []);
@@ -349,9 +366,8 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
         />
 
         <BodyDiagramCard
-          onActivateAlert={() => {
-            setIsAlert(true);
-          }}
+          alertLevel={sensorAlertLevel}
+          onCycleSensorAlert={cycleSensorAlert}
           className={PANEL_TRANSITION_CLASS}
           style={{ gridColumn: 1, gridRow: "3 / 6" }}
           onClick={() => handleCardSelect("body-diagram")}
@@ -372,6 +388,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
           style={{ gridColumn: 1, gridRow: "8 / 10" }}
           onClick={() => handleCardSelect("alert-notes")}
           isActive={activeCard === "alert-notes"}
+          sensorAlertLevel={sensorAlertLevel}
         />
 
         <div
@@ -430,9 +447,9 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
             <VitalSignsWaveformCard
               chartId="blood-pressure"
               config={WAVEFORM_CARD_CONFIG["blood-pressure"]}
-              label="ABP"
-              unit="mmHg"
-              displayValue={`${vitalSigns.bloodPressure.systolic}/${vitalSigns.bloodPressure.diastolic}`}
+              label=""
+              unit=""
+              displayValue={`Δ`}
               style={{ height: "100%" }}
               onSampleAction={handleBloodPressureSample}
               alertLevel={bpLevel}
@@ -442,7 +459,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
             <VitalSignsWaveformCard
               chartId="blood-volume"
               config={WAVEFORM_CARD_CONFIG["blood-volume"]}
-              label="Pleth"
+              label=""
               showDelta={true}
               style={{ height: "100%" }}
               onSampleAction={handleBloodVolumeSample}
@@ -489,7 +506,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
             <VitalSignsWaveformCard
               chartId="placeholder-1"
               config={WAVEFORM_CARD_CONFIG["blood-oxygenation"]}
-              label=""
+              label="SpO₂"
               unit="%"
               style={{ height: "100%" }}
               onSampleAction={handleBloodOxygenSample}

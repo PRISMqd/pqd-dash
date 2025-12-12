@@ -13,7 +13,7 @@ export function EventDetailsModal({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-50 relative">
+    <div className="fixed inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-50">
       <button
         type="button"
         className="absolute inset-0 w-full h-full cursor-default border-0 p-0 bg-transparent"
@@ -51,12 +51,7 @@ function Header({
   return (
     <div className="flex items-start justify-between">
       <div>
-        <div className="flex items-center gap-2 mb-1">
-          <div className={`w-3 h-3 rounded-full ${event.color}`} />
-          <h3 className="text-lg font-semibold text-foreground">
-            {event.type}
-          </h3>
-        </div>
+        <h3 className="text-lg font-semibold text-foreground">{event.type}</h3>
         <p className="text-sm text-muted-foreground">{event.timestamp}</p>
       </div>
       <button
@@ -88,7 +83,7 @@ function Header({
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="border-t border-border pt-4">
-      <h4 className="text-sm font-semibold text-primary mb-2">{title}</h4>
+      <h4 className="text-sm font-semibold text-foreground mb-2">{title}</h4>
       {children}
     </div>
   );

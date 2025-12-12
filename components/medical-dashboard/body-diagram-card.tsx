@@ -1,6 +1,7 @@
 "use client";
 
 import type { CSSProperties, KeyboardEvent } from "react";
+import type { AlertLevel } from "@/components/alert-state-context";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -12,15 +13,23 @@ const BODY_DIAGRAM_IMAGE_STYLE: CSSProperties = {
   height: "100%",
 };
 
+const SENSOR_COLORS: Record<AlertLevel, string> = {
+  normal: "transparent",
+  warning: "var(--dl-warning)",
+  critical: "var(--dl-crisis)",
+};
+
 export function BodyDiagramCard({
-  onActivateAlert,
+  alertLevel = "normal",
+  onCycleSensorAlert,
   className,
   style,
   onClick,
   isActive,
   unoptimizedImage,
 }: {
-  onActivateAlert: () => void;
+  alertLevel?: AlertLevel;
+  onCycleSensorAlert?: () => void;
   className?: string;
   style?: CSSProperties;
   onClick?: () => void;
@@ -34,6 +43,8 @@ export function BodyDiagramCard({
       onClick();
     }
   };
+
+  const sensorColor = SENSOR_COLORS[alertLevel];
 
   return (
     <Card
@@ -68,13 +79,34 @@ export function BodyDiagramCard({
         />
         <button
           type="button"
-          className="absolute top-[45%] left-1/2 -translate-x-1/2 cursor-pointer hover:opacity-80 transition-opacity border-0 p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring w-8 h-8 bg-[#C22D4D] [clip-path:polygon(50%_0%,_100%_25%,_100%_75%,_50%_100%,_0%_75%,_0%_25%)] animate-[pulse_1s_cubic-bezier(0.4,0,_0.6,1)_infinite]"
+          className={cn(
+            "absolute top-[45%] left-1/2 -translate-x-1/2 cursor-pointer p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring w-8 h-8 transition-all duration-300",
+            alertLevel === "critical"
+              ? "opacity-100 hover:opacity-80 animate-[pulse_1s_cubic-bezier(0.4,0,_0.6,1)_infinite]"
+              : alertLevel === "warning"
+                ? "opacity-100 hover:opacity-80"
+                : "opacity-0 hover:opacity-30",
+          )}
           onClick={(event) => {
             event.stopPropagation();
-            onActivateAlert();
+            onCycleSensorAlert?.();
           }}
-          aria-label="Highlight chest alert"
-        />
+          aria-label={`Sensor alert: ${alertLevel}. Click to cycle alert state.`}
+        >
+          {/* Outer hexagon for border */}
+          <div
+            className="absolute inset-0 [clip-path:polygon(50%_0%,_100%_25%,_100%_75%,_50%_100%,_0%_75%,_0%_25%)]"
+            style={{
+              backgroundColor:
+                alertLevel !== "normal" ? "rgba(30, 42, 40, 0.6)" : "#3F6E67",
+            }}
+          />
+          {/* Inner hexagon for fill */}
+          <div
+            className="absolute inset-[2px] [clip-path:polygon(50%_0%,_100%_25%,_100%_75%,_50%_100%,_0%_75%,_0%_25%)]"
+            style={{ backgroundColor: sensorColor }}
+          />
+        </button>
       </div>
     </Card>
   );

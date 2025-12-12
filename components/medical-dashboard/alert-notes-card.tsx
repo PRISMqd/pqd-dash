@@ -2,7 +2,6 @@
 
 import type { CSSProperties, KeyboardEvent } from "react";
 import type { AlertNoteConfig } from "@/components/medical-dashboard/types";
-import { useAlertState } from "@/components/alert-state-context";
 import {
   Card,
   CardContent,
@@ -19,14 +18,16 @@ export function AlertNotesCard({
   style,
   onClick,
   isActive,
+  sensorAlertLevel = "normal",
 }: {
   config: AlertNoteConfig;
   className?: string;
   style?: CSSProperties;
   onClick?: () => void;
   isActive?: boolean;
+  sensorAlertLevel?: "normal" | "warning" | "critical";
 }) {
-  const { isAlert } = useAlertState();
+  const hasBodyAlert = sensorAlertLevel !== "normal";
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!onClick) return;
@@ -55,13 +56,16 @@ export function AlertNotesCard({
     >
       <CardHeader className="px-2.5 py-2">
         <CardTitle className="text-xs font-semibold text-primary">
-          {isAlert ? config.details.title : "Notes:"}
+          {hasBodyAlert ? config.details.title : "Notes:"}
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 min-h-0 px-2.5 pb-2.5 text-xs">
         <ScrollArea className="h-full" contentClassName="space-y-2">
-          {isAlert ? (
-            <AlertDetails details={config.details} />
+          {hasBodyAlert ? (
+            <AlertDetails
+              details={config.details}
+              alertLevel={sensorAlertLevel}
+            />
           ) : (
             <NotesPlaceholder text={config.notesPlaceholder} />
           )}
@@ -72,14 +76,26 @@ export function AlertNotesCard({
   );
 }
 
-function AlertDetails({ details }: { details: AlertNoteConfig["details"] }) {
+function AlertDetails({
+  details,
+  alertLevel,
+}: {
+  details: AlertNoteConfig["details"];
+  alertLevel: "warning" | "critical";
+}) {
+  const isWarning = alertLevel === "warning";
+  const summaryText = isWarning ? "Active body alert" : details.summary;
+
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
-        <span className="text-xs font-semibold text-destructive">
-          {details.summary}
-        </span>
+        <div
+          className={cn(
+            "w-2 h-2 rounded-full bg-foreground",
+            alertLevel === "critical" && "animate-pulse",
+          )}
+        />
+        <span className="text-xs font-semibold">{summaryText}</span>
       </div>
       {details.escalationNote ? (
         <p className="text-xs text-card-foreground leading-relaxed">
