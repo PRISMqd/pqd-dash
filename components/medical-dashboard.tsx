@@ -59,7 +59,7 @@ const CARD_ORIGIN: Record<DashboardCardId, string> = {
   policy: "right bottom",
 };
 
-const _CARD_ALIGNMENT: Record<
+const CARD_ALIGNMENT: Record<
   DashboardCardId,
   { justify: string; align: string }
 > = {
@@ -353,7 +353,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
             setIsAlert(true);
           }}
           className={PANEL_TRANSITION_CLASS}
-          style={{ gridColumn: 1, gridRow: "3 / 7" }}
+          style={{ gridColumn: 1, gridRow: "3 / 6" }}
           onClick={() => handleCardSelect("body-diagram")}
           isActive={activeCard === "body-diagram"}
         />
@@ -361,7 +361,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
         <PatientInfoCard
           patient={data.patient}
           className={PANEL_TRANSITION_CLASS}
-          style={{ gridColumn: 1, gridRow: "7 / 8" }}
+          style={{ gridColumn: 1, gridRow: "6 / 8" }}
           onClick={() => handleCardSelect("patient")}
           isActive={activeCard === "patient"}
         />
@@ -512,7 +512,10 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
           </div>
         </div>
 
-        <div className={`${PANEL_TRANSITION_CLASS} h-full`}>
+        <div
+          className={`${PANEL_TRANSITION_CLASS} h-full`}
+          style={{ gridColumn: 2, gridRow: 9 }}
+        >
           <VitalSignsWaveformCard
             chartId="ecg-bottom"
             config={WAVEFORM_CARD_CONFIG["ecg-primary"]}
@@ -696,6 +699,20 @@ function ExpandedCardOverlay({
   cardId: DashboardCardId;
   onClose: () => void;
 }) {
+  const alignment = CARD_ALIGNMENT[cardId];
+  const alignItems =
+    alignment.align === "start"
+      ? "items-start"
+      : alignment.align === "end"
+        ? "items-end"
+        : "items-center";
+  const justifyContent =
+    alignment.justify === "start"
+      ? "justify-start"
+      : alignment.justify === "end"
+        ? "justify-end"
+        : "justify-center";
+
   return (
     <div className="fixed inset-0 z-30 p-3 md:p-6" role="presentation">
       <button
@@ -704,7 +721,13 @@ function ExpandedCardOverlay({
         onClick={onClose}
         aria-label="Close expanded card"
       />
-      <div className="relative z-10 pointer-events-auto w-full flex items-start justify-end">
+      <div
+        className={cn(
+          "relative z-10 pointer-events-auto w-full h-full flex",
+          alignItems,
+          justifyContent,
+        )}
+      >
         <div style={{ transformOrigin: CARD_ORIGIN[cardId] }}>{children}</div>
       </div>
     </div>

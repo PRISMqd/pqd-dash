@@ -38,7 +38,7 @@ export function BodyDiagramCard({
   return (
     <Card
       className={cn(
-        "bg-transparent border-[#3F6E67]/40 p-0 flex items-center justify-center w-full h-full min-h-[300px] overflow-hidden",
+        "bg-transparent border-[#3F6E67]/40 p-0 flex items-center justify-center w-full h-full overflow-hidden",
         onClick &&
           "cursor-pointer hover:border-primary/70 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-0",
         isActive &&
