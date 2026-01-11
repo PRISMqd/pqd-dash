@@ -1,15 +1,38 @@
 "use client";
 
 import type { CSSProperties, KeyboardEvent } from "react";
-import type { ClinicianDetails } from "@/components/medical-dashboard/types";
+import type {
+  ClinicianDetails,
+  TeamMember,
+  TeamMemberStatus,
+} from "@/components/medical-dashboard/types";
+import { AlertTriangle, Camera, RefreshCw, Send, X } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+
+const CONNECTION_STATUS_COLORS = {
+  connected: "border-[#218F67]",
+  partial: "border-[#D1C247]",
+  disconnected: "border-[#C22D4D]",
+} as const;
+
+const MEMBER_STATUS_COLORS: Record<TeamMemberStatus, string> = {
+  active: "bg-[#218F67]",
+  inactive: "bg-[#D1C247]",
+  offline: "bg-[#6B7280]",
+};
+
+const MEMBER_STATUS_TOOLTIP: Record<TeamMemberStatus, string> = {
+  active: "Active and receiving updates",
+  inactive: "Inactive > 15 min",
+  offline: "Offline",
+};
 
 export function ClinicianCard({
   clinician,
@@ -32,10 +55,15 @@ export function ClinicianCard({
     }
   };
 
+  const connectionBorder = clinician.connectionStatus
+    ? CONNECTION_STATUS_COLORS[clinician.connectionStatus]
+    : "";
+
   return (
     <Card
       className={cn(
         "bg-transparent border-[#3F6E67]/40 min-h-0 gap-0 py-0",
+        connectionBorder,
         onClick &&
           "cursor-pointer hover:border-primary/70 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-0",
         isActive &&
@@ -52,22 +80,70 @@ export function ClinicianCard({
     >
       <CardHeader className="px-2.5 py-2">
         <CardTitle className="text-xs font-semibold text-primary">
-          Clinician
+          Active Team
         </CardTitle>
       </CardHeader>
       <CardContent className="px-2.5 pb-2.5 text-xs space-y-1.5">
-        <div className="space-y-0.5">
-          <InfoRow label="Name" value={clinician.name} />
-          <InfoRow label="Teams" value={clinician.teams.join(", ")} />
-          <InfoRow label="Status" value={clinician.status} />
-        </div>
+        {clinician.teamMembers && clinician.teamMembers.length > 0 ? (
+          <TooltipProvider>
+            <div className="space-y-1">
+              {clinician.teamMembers.map((member) => (
+                <TeamMemberRow key={member.name} member={member} />
+              ))}
+            </div>
+          </TooltipProvider>
+        ) : (
+          <div className="space-y-0.5">
+            <InfoRow label="Name" value={clinician.name} />
+            <InfoRow label="Teams" value={clinician.teams.join(", ")} />
+            <InfoRow label="Status" value={clinician.status} />
+          </div>
+        )}
         <div className="pt-1.5 space-y-0.5">
           <div className="text-xs font-semibold">Physician</div>
           <div className="text-xs">{clinician.physician}</div>
         </div>
       </CardContent>
-      <CardFooter className="px-2.5 pb-2.5 pt-0"></CardFooter>
     </Card>
+  );
+}
+
+function TeamMemberRow({ member }: { member: TeamMember }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className="flex items-center gap-2 cursor-pointer hover:bg-primary/5 rounded px-1 py-0.5 -mx-1">
+          <span
+            className={cn(
+              "w-2 h-2 rounded-full flex-shrink-0",
+              MEMBER_STATUS_COLORS[member.status],
+            )}
+            aria-hidden="true"
+          />
+          <span className="font-medium">{member.role}</span>
+          <span className="text-muted-foreground truncate">{member.name}</span>
+        </div>
+      </TooltipTrigger>
+      <TooltipContent side="right" className="max-w-xs">
+        <div className="space-y-1">
+          <div className="font-semibold">
+            {member.name}
+            {member.credentials && (
+              <span className="font-normal text-muted-foreground">
+                {" "}
+                • {member.credentials}
+              </span>
+            )}
+          </div>
+          <div className="text-xs text-muted-foreground">
+            {MEMBER_STATUS_TOOLTIP[member.status]}
+          </div>
+          <div className="text-xs">
+            Click to view role, credentials, and contact options.
+          </div>
+        </div>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -86,8 +162,6 @@ export function ClinicianExpandedCard({
   clinician: ClinicianDetails;
   onClose: () => void;
 }) {
-  const placeholderKeys = ["notes", "tasks", "history", "handoff"];
-
   return (
     <div
       className="relative w-full max-w-5xl min-h-[55vh] md:min-h-[60vh] rounded-2xl border-2 border-[#3F6E67]/70 bg-[#b7d8d1] text-[#1e2a28] shadow-[0_12px_24px_rgba(0,0,0,0.28)] p-6 md:p-8 flex flex-col"
@@ -102,50 +176,106 @@ export function ClinicianExpandedCard({
         className="absolute top-4 right-4 text-[#1e2a28]/80 hover:text-[#1e2a28] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#3F6E67]"
         aria-label="Close clinician details"
       >
-        <svg
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
+        <X className="w-6 h-6" aria-hidden="true" />
       </button>
 
-      <div className="space-y-3 md:space-y-4 text-xl md:text-2xl font-semibold">
-        <div>Clinician:</div>
-        <div>
-          <span className="font-bold">Name:</span> {clinician.name}
+      {/* OMO Content */}
+      {clinician.omo && (
+        <div className="space-y-4 mb-6">
+          <div className="text-lg font-semibold">
+            {clinician.omo.observation}
+          </div>
+          <div className="text-base text-[#1e2a28]/80">
+            {clinician.omo.meaning}
+          </div>
+          <div className="text-sm text-[#1e2a28]/70 italic">
+            {clinician.omo.options}
+          </div>
         </div>
-        <div>
-          <span className="font-bold">Teams:</span> {clinician.teams.join(", ")}
+      )}
+
+      {/* Team Members Grid */}
+      {clinician.teamMembers && clinician.teamMembers.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {clinician.teamMembers.map((member) => (
+            <div
+              key={member.name}
+              className="p-4 rounded-xl bg-[#9fcac0] border border-[#3F6E67]/30"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span
+                  className={cn(
+                    "w-3 h-3 rounded-full",
+                    MEMBER_STATUS_COLORS[member.status],
+                  )}
+                />
+                <span className="font-bold">{member.role}</span>
+              </div>
+              <div className="text-lg font-semibold">{member.name}</div>
+              {member.credentials && (
+                <div className="text-sm text-[#1e2a28]/70">
+                  {member.credentials}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-        <div>
-          <span className="font-bold">Status:</span> {clinician.status}
-        </div>
-        <div>
-          <span className="font-bold">Physician:</span> {clinician.physician}
-        </div>
-      </div>
+      )}
 
       <div className="flex-1" />
 
-      <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 mt-auto">
-        {placeholderKeys.map((placeholder) => (
-          <div
-            key={placeholder}
-            className="h-24 rounded-xl bg-[#7cb7aa] shadow-inner"
-            aria-hidden
-          />
-        ))}
+      {/* Action Buttons */}
+      <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <ActionButton
+          icon={<Send className="w-6 h-6" />}
+          label="Message"
+          tooltip="Send a quick update or question to the selected team member."
+        />
+        <ActionButton
+          icon={<Camera className="w-6 h-6" />}
+          label="Share Snapshot"
+          tooltip="Share current screen view for review or teaching."
+        />
+        <ActionButton
+          icon={<AlertTriangle className="w-6 h-6 text-[#C22D4D]" />}
+          label="Escalate"
+          tooltip="If the situation appears to worsen, consider alerting Rapid Response."
+        />
+        <ActionButton
+          icon={<RefreshCw className="w-6 h-6" />}
+          label="Refresh"
+          tooltip="Update team list and connection indicators."
+        />
       </div>
     </div>
+  );
+}
+
+function ActionButton({
+  icon,
+  label,
+  tooltip,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  tooltip: string;
+}) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            className="h-24 rounded-xl bg-[#7cb7aa] shadow-inner border border-[#6aa194]/60 flex flex-col items-center justify-center gap-2 hover:bg-[#6aa194] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F6E67]"
+          >
+            {icon}
+            <span className="text-sm font-medium">{label}</span>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="max-w-xs">
+          {tooltip}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

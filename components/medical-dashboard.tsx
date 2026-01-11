@@ -5,25 +5,40 @@ import type {
   MedicalDashboardData,
   TimelineEvent,
 } from "@/components/medical-dashboard/types";
-import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertLevelBar } from "@/components/alert-level-bar";
 import {
   AlertStateProvider,
   useAlertState,
 } from "@/components/alert-state-context";
-import { AIInformationCard } from "@/components/medical-dashboard/ai-information-card";
+import {
+  AIInformationCard,
+  AIInformationExpandedCard,
+} from "@/components/medical-dashboard/ai-information-card";
 import { AlertNotesCard } from "@/components/medical-dashboard/alert-notes-card";
-import { BodyDiagramCard } from "@/components/medical-dashboard/body-diagram-card";
+import {
+  BodyDiagramCard,
+  BodyDiagramExpandedCard,
+} from "@/components/medical-dashboard/body-diagram-card";
 import {
   ClinicianCard,
   ClinicianExpandedCard,
 } from "@/components/medical-dashboard/clinician-card";
 import { EventDetailsModal } from "@/components/medical-dashboard/event-details-modal";
-import { PatientInfoCard } from "@/components/medical-dashboard/patient-info-card";
-import { PolicyInfoCard } from "@/components/medical-dashboard/policy-info-card";
-import { StatusInfoCard } from "@/components/medical-dashboard/status-info-card";
+import {
+  PatientExpandedCard,
+  PatientInfoCard,
+} from "@/components/medical-dashboard/patient-info-card";
+import {
+  PolicyExpandedCard,
+  PolicyInfoCard,
+} from "@/components/medical-dashboard/policy-info-card";
+import {
+  StatusExpandedCard,
+  StatusInfoCard,
+} from "@/components/medical-dashboard/status-info-card";
 import { TimelineTrack } from "@/components/medical-dashboard/timeline-track";
+import { VitalSign } from "@/components/medical-dashboard/vital-sign";
 import { VitalSignsWaveformCard } from "@/components/vital-signs-waveform-card";
 import { cn } from "@/lib/utils";
 
@@ -603,70 +618,6 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
   );
 }
 
-export function VitalSign({
-  label,
-  value,
-  subValue,
-  avg,
-  alert,
-  large,
-  glowColor,
-  glowBlur = 14,
-}: {
-  label: string;
-  value: string;
-  subValue?: string;
-  avg: string;
-  alert?: boolean;
-  large?: boolean;
-  glowColor?: string;
-  glowBlur?: number;
-}) {
-  const glowStyle = glowColor
-    ? {
-        textShadow: `0 0 ${glowBlur}px ${glowColor}, 0 0 ${glowBlur * 0.6}px ${glowColor}`,
-      }
-    : undefined;
-
-  return (
-    <div
-      className={`flex flex-col justify-between px-2 py-2 ${PANEL_TRANSITION_CLASS}`}
-    >
-      <div
-        className={`h-5 flex items-center justify-center ${COLOR_TRANSITION_CLASS}`}
-      >
-        <div className="text-xs font-semibold text-muted-foreground tracking-wide uppercase">
-          {label}
-        </div>
-      </div>
-      <div
-        className={`flex flex-col items-center justify-center ${large ? "h-20" : "h-16"} ${PANEL_TRANSITION_CLASS}`}
-      >
-        <div
-          className={`${large ? "text-5xl" : "text-3xl"} font-bold tracking-tight leading-none ${alert ? "text-destructive" : "text-foreground"} whitespace-nowrap ${COLOR_TRANSITION_CLASS}`}
-          style={glowStyle}
-        >
-          {value}
-        </div>
-        {subValue && (
-          <div
-            className={`text-xl font-bold text-foreground/90 leading-none mt-1 whitespace-nowrap ${COLOR_TRANSITION_CLASS}`}
-          >
-            {subValue}
-          </div>
-        )}
-      </div>
-      <div
-        className={`h-5 flex items-center justify-center ${COLOR_TRANSITION_CLASS}`}
-      >
-        <div className="text-xs font-bold text-muted-foreground/70 whitespace-nowrap">
-          AVG {avg}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 type ExpandedCardProps = {
   activeCard: DashboardCardId;
   data: MedicalDashboardData;
@@ -687,21 +638,35 @@ function renderExpandedCard({
         />
       );
     case "body-diagram":
-      return <BodyDiagramExpanded onClose={closeActiveCard} />;
+      return (
+        <BodyDiagramExpandedCard
+          sensors={data.sensors}
+          onClose={closeActiveCard}
+        />
+      );
     case "patient":
       return (
-        <PatientExpanded patient={data.patient} onClose={closeActiveCard} />
+        <PatientExpandedCard patient={data.patient} onClose={closeActiveCard} />
       );
     case "alert-notes":
       return (
         <AlertNotesExpanded config={data.alert} onClose={closeActiveCard} />
       );
     case "status":
-      return <StatusExpanded content={data.status} onClose={closeActiveCard} />;
+      return (
+        <StatusExpandedCard content={data.status} onClose={closeActiveCard} />
+      );
     case "ai-insight":
-      return <AIExpanded insight={data.aiInsight} onClose={closeActiveCard} />;
+      return (
+        <AIInformationExpandedCard
+          insight={data.aiInsight}
+          onClose={closeActiveCard}
+        />
+      );
     case "policy":
-      return <PolicyExpanded policy={data.policy} onClose={closeActiveCard} />;
+      return (
+        <PolicyExpandedCard policy={data.policy} onClose={closeActiveCard} />
+      );
     default:
       return null;
   }
@@ -857,52 +822,6 @@ function ActionStubRow({
   );
 }
 
-function BodyDiagramExpanded({ onClose }: { onClose: () => void }) {
-  return (
-    <ExpandedSurface onClose={onClose} widthClass="w-[min(90vw,520px)]">
-      <div className="relative w-full aspect-[3/4] max-h-[70vh] overflow-hidden rounded-xl border border-[#3F6E67]/60 bg-[#9fcac0]">
-        <Image
-          src="/images/body-diagram.svg"
-          alt="Body diagram expanded"
-          fill
-          priority
-          style={{ objectFit: "cover", pointerEvents: "none" }}
-          sizes="(min-width: 1280px) 420px, 80vw"
-        />
-        <div className="absolute left-4 top-6 flex flex-col gap-4">
-          {ACTION_STUB_KEYS.slice(0, 4).map((key) => (
-            <ActionStub key={key} className="h-16 w-16" />
-          ))}
-        </div>
-      </div>
-    </ExpandedSurface>
-  );
-}
-
-function PatientExpanded({
-  patient,
-  onClose,
-}: {
-  patient: MedicalDashboardData["patient"];
-  onClose: () => void;
-}) {
-  return (
-    <ExpandedSurface onClose={onClose} widthClass="w-[min(88vw,760px)]">
-      <div className="flex flex-col flex-1 h-full gap-4">
-        <div className="space-y-2 text-lg font-semibold">
-          <div>Patient:</div>
-          <div>
-            <span className="font-bold">Name:</span> {patient.name}
-          </div>
-          <div>{`${patient.sex} ${patient.birthDate}`}</div>
-        </div>
-        <div className="flex-1" />
-        <ActionStubRow alignBottom />
-      </div>
-    </ExpandedSurface>
-  );
-}
-
 function AlertNotesExpanded({
   config,
   onClose,
@@ -922,75 +841,4 @@ function AlertNotesExpanded({
   );
 }
 
-function StatusExpanded({
-  content,
-  onClose,
-}: {
-  content: MedicalDashboardData["status"];
-  onClose: () => void;
-}) {
-  return (
-    <ExpandedSurface onClose={onClose} widthClass="w-[min(88vw,900px)]">
-      <div className="flex flex-col flex-1 h-full gap-4">
-        <div className="text-lg font-semibold">Status:</div>
-        <p className="text-base leading-relaxed">{content.summary}</p>
-        <div className="flex-1" />
-        <ActionStubRow alignBottom />
-      </div>
-    </ExpandedSurface>
-  );
-}
-
-function AIExpanded({
-  insight,
-  onClose,
-}: {
-  insight: MedicalDashboardData["aiInsight"];
-  onClose: () => void;
-}) {
-  return (
-    <ExpandedSurface onClose={onClose} widthClass="w-[min(88vw,900px)]">
-      <div className="flex flex-col flex-1 h-full gap-4">
-        <div className="text-lg font-semibold">{insight.headline}</div>
-        <div className="space-y-2 text-base leading-relaxed">
-          {insight.details.slice(0, 2).map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
-        </div>
-        <div className="flex-1" />
-        <ActionStubRow alignBottom />
-      </div>
-    </ExpandedSurface>
-  );
-}
-
-function PolicyExpanded({
-  policy,
-  onClose,
-}: {
-  policy: MedicalDashboardData["policy"];
-  onClose: () => void;
-}) {
-  return (
-    <ExpandedSurface onClose={onClose} widthClass="w-[min(88vw,900px)]">
-      <div className="flex flex-col flex-1 h-full gap-4">
-        <div className="text-lg font-semibold">Policy Information:</div>
-        <p className="text-base leading-relaxed">{policy.summary}</p>
-        <div className="flex-1" />
-        <ActionStubRow alignBottom />
-      </div>
-    </ExpandedSurface>
-  );
-}
-
-export {
-  ExpandedSurface,
-  ActionStubRow,
-  BodyDiagramExpanded,
-  PatientExpanded,
-  AlertNotesExpanded,
-  StatusExpanded,
-  AIExpanded,
-  PolicyExpanded,
-  ClinicianExpandedCard,
-};
+export { ExpandedSurface, ActionStubRow, AlertNotesExpanded };
