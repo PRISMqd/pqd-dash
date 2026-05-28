@@ -11,32 +11,19 @@ import {
   Share,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import {
-  CategoryAxis,
-  EAutoRange,
-  EllipsePointMarker,
-  FastLineRenderableSeries,
-  NumberRange,
-  NumericAxis,
-  SciChartJSLightTheme,
-  SciChartSurface,
-} from "scichart";
+import { useEffect, useRef, useState } from "react";
+import { LineChart, Line, ResponsiveContainer } from "recharts";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  prewarmWaveformSeries,
-  type SeriesId,
-  subscribeToWaveformStream,
-  WAVEFORM_STREAM_CONSTANTS,
-} from "@/data/vital-signs-stream";
+import type { SeriesId } from "@/data/vital-signs-stream";
+import { subscribeToWaveformStream } from "@/data/vital-signs-stream";
 import { cn } from "@/lib/utils";
 
-const STROKE_THICKNESS = 4;
+const BUFFER_SIZE = 120;
 
 // OMO content per COPY.md Box 10
 const WAVEFORM_OMO = {
@@ -83,23 +70,6 @@ const WAVEFORM_TOOLTIPS: Record<SeriesId, { segment: string; trend: string }> =
     },
   };
 
-const configureSciChartEnvironment = () => {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  const licenseKey = process.env.NEXT_PUBLIC_SCICHART_LICENSE_KEY;
-  if (licenseKey) {
-    SciChartSurface.setRuntimeLicenseKey(licenseKey);
-  } else {
-    SciChartSurface.UseCommunityLicense();
-  }
-
-  const wasmUrl =
-    process.env.NEXT_PUBLIC_SCICHART_WASM_URL ?? "/_wasm/scichart2d.wasm";
-  SciChartSurface.configure({ wasmUrl });
-};
-
 export type VitalSignsWaveformCardProps = {
   chartId: string;
   config: {
@@ -136,126 +106,27 @@ export function VitalSignsWaveformCard({
 }: VitalSignsWaveformCardProps) {
   const [currentValue, setCurrentValue] = useState<number>(0);
   const [isHovered, setIsHovered] = useState(false);
-
-  const surfacePromise = useMemo(
-    () => ({ current: null as null | Promise<void> }),
-    [],
+  const [buffer, setBuffer] = useState<{ v: number }[]>(() =>
+    Array.from({ length: BUFFER_SIZE }, () => ({ v: 0 })),
   );
-  const surfaceContainerId = useMemo(() => `${chartId}-surface`, [chartId]);
+  const bufferRef = useRef<{ v: number }[]>(
+    Array.from({ length: BUFFER_SIZE }, () => ({ v: 0 })),
+  );
 
   useEffect(() => {
-    const container = document.getElementById(surfaceContainerId);
-    if (!(container instanceof HTMLDivElement)) {
-      return;
-    }
-
-    configureSciChartEnvironment();
-
-    container.replaceChildren();
-    container.style.position = "absolute";
-    container.style.left = "-0.5rem";
-    container.style.width = "calc(100% + 1rem)";
-    container.style.height = "calc(100%)";
-
-    const { POINTS_LOOP, GAP_POINTS } = WAVEFORM_STREAM_CONSTANTS;
-
-    let surface: SciChartSurface | undefined;
-    let unsubscribe: (() => void) | undefined;
-
-    const createChart = async () => {
-      const { sciChartSurface, wasmContext } = await SciChartSurface.create(
-        container,
-        {
-          theme: new SciChartJSLightTheme(),
-        },
-      );
-
-      surface = sciChartSurface;
-
-      const theme = new SciChartJSLightTheme();
-      theme.sciChartBackground = "transparent";
-      theme.gridBackgroundBrush = "transparent";
-      theme.loadingAnimationBackground = "transparent";
-      theme.labelBackgroundBrush = "transparent";
-      sciChartSurface.applyTheme(theme);
-      sciChartSurface.background = "transparent";
-      sciChartSurface.chartModifiers.clear();
-
-      const xAxis = new CategoryAxis(wasmContext, {
-        visibleRange: new NumberRange(0, POINTS_LOOP),
-        isVisible: false,
-        autoRange: EAutoRange.Never,
-      });
-      xAxis.drawLabels = false;
-      xAxis.drawMajorGridLines = false;
-      xAxis.drawMinorGridLines = false;
-      xAxis.drawMajorTickLines = false;
-      xAxis.drawMinorTickLines = false;
-      sciChartSurface.xAxes.add(xAxis);
-
-      const yAxis = new NumericAxis(wasmContext, {
-        isVisible: false,
-        autoRange: EAutoRange.Always,
-      });
-      yAxis.growBy = new NumberRange(0.1, 0.1);
-      yAxis.drawLabels = false;
-      yAxis.drawMajorGridLines = false;
-      yAxis.drawMinorGridLines = false;
-      yAxis.drawMajorTickLines = false;
-      yAxis.drawMinorTickLines = false;
-      sciChartSurface.yAxes.add(yAxis);
-
-      const dataSeries = prewarmWaveformSeries(
-        config.seriesId,
-        wasmContext,
-        POINTS_LOOP,
-        GAP_POINTS,
-      );
-
-      const pointMarker = new EllipsePointMarker(wasmContext, {
-        width: 7,
-        height: 7,
-        strokeThickness: 2,
-        fill: config.strokeColor,
-        stroke: config.strokeColor,
-        lastPointOnly: true,
-      });
-
-      const renderableSeries = new FastLineRenderableSeries(wasmContext, {
-        dataSeries,
-        stroke: config.strokeColor,
-        strokeThickness: config.strokeThickness ?? STROKE_THICKNESS,
-        pointMarker,
-        strokeDashArray: [],
-      });
-
-      sciChartSurface.renderableSeries.add(renderableSeries);
-
-      unsubscribe = subscribeToWaveformStream(
-        config.seriesId,
-        dataSeries,
-        (value) => {
-          setCurrentValue(value);
-          onSample?.(value);
-        },
-      );
-    };
-
-    const promise = createChart();
-    surfacePromise.current = promise;
-
-    return () => {
-      unsubscribe?.();
-      surface?.delete();
-    };
-  }, [
-    config.seriesId,
-    config.strokeColor,
-    config.strokeThickness,
-    onSample,
-    surfaceContainerId,
-    surfacePromise,
-  ]);
+    const unsubscribe = subscribeToWaveformStream(
+      config.seriesId,
+      null as never,
+      (value) => {
+        setCurrentValue(value);
+        onSample?.(value);
+        const next = [...bufferRef.current.slice(1), { v: value }];
+        bufferRef.current = next;
+        setBuffer([...next]);
+      },
+    );
+    return () => unsubscribe?.();
+  }, [config.seriesId, onSample]);
 
   const formatValue = (val: number): string => {
     if (config.seriesId === "bloodPressure") {
@@ -325,11 +196,22 @@ export function VitalSignsWaveformCard({
           </TooltipContent>
         </Tooltip>
 
-        {/* Transparent waveform area */}
+        {/* Waveform area */}
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="flex-1 relative cursor-help">
-              <div id={surfaceContainerId} />
+            <div className="flex-1 relative cursor-help overflow-hidden">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={buffer} margin={{ top: 4, right: 0, left: 0, bottom: 4 }}>
+                  <Line
+                    type="monotone"
+                    dataKey="v"
+                    stroke={waveformState === "artifact" ? "#6B7280" : config.strokeColor}
+                    strokeWidth={config.strokeThickness ?? 2}
+                    dot={false}
+                    isAnimationActive={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
 
               {/* Trend overlay on hover */}
               {isHovered && (
