@@ -41,6 +41,8 @@ import { TimelineTrack } from "@/components/medical-dashboard/timeline-track";
 import { VitalSign } from "@/components/medical-dashboard/vital-sign";
 import { VitalSignsWaveformCard } from "@/components/vital-signs-waveform-card";
 import { cn } from "@/lib/utils";
+import { ScenarioPlayer } from "@/components/scenario-player";
+import type { ScenarioStage } from "@/lib/dal/scenario-sepsis-ryan";
 
 const VITAL_BASELINES = {
   heartRate: { nominal: 88, avg: 84, alert: 150 },
