@@ -49,11 +49,11 @@ const WAVEFORM_STATE_STYLES: Record<
   trending: { trace: "#D1C247", label: "Gradual upward/downward trend noted." },
   critical: {
     trace: "#C22D4D",
-    label: "Sustained deviation beyond threshold � review trend detail.",
+    label: "Sustained deviation beyond threshold — review trend detail.",
   },
   artifact: {
     trace: "#6B7280",
-    label: "Data interruption > 10 s � possible lead movement or artifact.",
+    label: "Data interruption > 10 s — possible lead movement or artifact.",
   },
 };
 
@@ -73,7 +73,7 @@ const WAVEFORM_TOOLTIPS: Record<SeriesId, { segment: string; trend: string }> =
       trend: "Respiratory rate trend.",
     },
     bloodOxygenation: {
-      segment: "Displays SpO? plethysmography waveform.",
+      segment: "Displays SpO₂ plethysmography waveform.",
       trend: "Oxygen saturation trend.",
     },
   };
@@ -299,7 +299,7 @@ export function VitalSignsWaveformCard({
                 className="text-2xl font-bold leading-none"
                 style={{ color: valueText }}
               >
-                {showDelta ? "?" : (displayValue ?? formatValue(currentValue))}
+                {showDelta ? "Δ" : (displayValue ?? formatValue(currentValue))}
               </div>
               {unit && !showDelta && (
                 <div className="text-xs mt-0.5" style={{ color: valueText }}>
@@ -399,7 +399,7 @@ export function WaveformExpandedView({
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              Add or remove signals for correlation (e.g., HR ? RR ? SpO?).
+              Add or remove signals for correlation (e.g., HR ↔ RR ↔ SpO₂).
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
