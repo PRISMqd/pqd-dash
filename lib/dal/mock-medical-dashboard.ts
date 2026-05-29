@@ -101,9 +101,11 @@ export function createMockMedicalDashboardData(): MedicalDashboardData {
         "Engage respiratory therapy to verify mask fit and adjust FiO₂ if SpO₂ remains below 95%.",
       ],
       omo: {
-        observation: "No active alerts.",
-        meaning: "All monitored parameters within expected range.",
-        options: "Review recent trend history or verify sensor placement.",
+        omo: {
+          observation: "Active alert: ST elevation pattern and borderline SpO₂ — review findings below.",
+          meaning: "ECG and hemodynamic findings require immediate clinician review. ACS not yet ruled out.",
+          options: "Expand panel to review waveform detail, initiate STEMI checklist, or annotate findings.",
+},
       },
     },
     policy: {
