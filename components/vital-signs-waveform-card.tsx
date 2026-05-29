@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { LineChart, Line, ResponsiveContainer } from "recharts";
+import { LineChart, Line, YAxis, ResponsiveContainer } from "recharts";
 import {
   Tooltip,
   TooltipContent,
@@ -21,9 +21,17 @@ import {
 } from "@/components/ui/tooltip";
 import type { SeriesId } from "@/data/vital-signs-stream";
 import { subscribeToWaveformStream } from "@/data/vital-signs-stream";
+import { vitalSignsEcgData } from "@/data/scichart-vital-signs-data";
 import { cn } from "@/lib/utils";
 
 const BUFFER_SIZE = 120;
+
+const SERIES_DATA_MAP: Record<SeriesId, readonly number[]> = {
+  ecg: vitalSignsEcgData.ecgHeartRateValues,
+  bloodPressure: vitalSignsEcgData.bloodPressureValues,
+  bloodVolume: vitalSignsEcgData.bloodVolumeValues,
+  bloodOxygenation: vitalSignsEcgData.bloodOxygenationValues,
+};
 
 // OMO content per COPY.md Box 10
 const WAVEFORM_OMO = {
@@ -41,11 +49,11 @@ const WAVEFORM_STATE_STYLES: Record<
   trending: { trace: "#D1C247", label: "Gradual upward/downward trend noted." },
   critical: {
     trace: "#C22D4D",
-    label: "Sustained deviation beyond threshold — review trend detail.",
+    label: "Sustained deviation beyond threshold � review trend detail.",
   },
   artifact: {
     trace: "#6B7280",
-    label: "Data interruption > 10 s — possible lead movement or artifact.",
+    label: "Data interruption > 10 s � possible lead movement or artifact.",
   },
 };
 
@@ -65,7 +73,7 @@ const WAVEFORM_TOOLTIPS: Record<SeriesId, { segment: string; trend: string }> =
       trend: "Respiratory rate trend.",
     },
     bloodOxygenation: {
-      segment: "Displays SpO₂ plethysmography waveform.",
+      segment: "Displays SpO? plethysmography waveform.",
       trend: "Oxygen saturation trend.",
     },
   };
@@ -106,12 +114,16 @@ export function VitalSignsWaveformCard({
 }: VitalSignsWaveformCardProps) {
   const [currentValue, setCurrentValue] = useState<number>(0);
   const [isHovered, setIsHovered] = useState(false);
-  const [buffer, setBuffer] = useState<{ v: number }[]>(() =>
-    Array.from({ length: BUFFER_SIZE }, () => ({ v: 0 })),
-  );
-  const bufferRef = useRef<{ v: number }[]>(
-    Array.from({ length: BUFFER_SIZE }, () => ({ v: 0 })),
-  );
+
+  const initBuffer = () => {
+    const source = SERIES_DATA_MAP[config.seriesId];
+    return Array.from({ length: BUFFER_SIZE }, (_, i) => ({
+      v: source[i % source.length],
+    }));
+  };
+
+  const [buffer, setBuffer] = useState<{ v: number }[]>(initBuffer);
+  const bufferRef = useRef<{ v: number }[]>(initBuffer());
 
   useEffect(() => {
     const unsubscribe = subscribeToWaveformStream(
@@ -202,6 +214,10 @@ export function VitalSignsWaveformCard({
             <div className="flex-1 relative cursor-help overflow-hidden">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={buffer} margin={{ top: 4, right: 0, left: 0, bottom: 4 }}>
+                  <YAxis
+                    domain={["auto", "auto"]}
+                    hide
+                  />
                   <Line
                     type="monotone"
                     dataKey="v"
@@ -283,7 +299,7 @@ export function VitalSignsWaveformCard({
                 className="text-2xl font-bold leading-none"
                 style={{ color: valueText }}
               >
-                {showDelta ? "Δ" : (displayValue ?? formatValue(currentValue))}
+                {showDelta ? "?" : (displayValue ?? formatValue(currentValue))}
               </div>
               {unit && !showDelta && (
                 <div className="text-xs mt-0.5" style={{ color: valueText }}>
@@ -383,7 +399,7 @@ export function WaveformExpandedView({
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              Add or remove signals for correlation (e.g., HR ↔ RR ↔ SpO₂).
+              Add or remove signals for correlation (e.g., HR ? RR ? SpO?).
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
