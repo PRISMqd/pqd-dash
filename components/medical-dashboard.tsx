@@ -175,6 +175,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
   const [vitalSigns, setVitalSigns] = useState<VitalSignsState>(
     createInitialVitalSigns,
   );
+  const [scenarioStage, setScenarioStage] = useState<ScenarioStage | null>(null);
   const ecgSamplesRef = useRef<number[]>([]);
   const respiratorySamplesRef = useRef<number[]>([]);
   const spo2SamplesRef = useRef<number[]>([]);
@@ -575,11 +576,12 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
           style={{ gridColumn: 3, gridRow: "3 / 8" }}
         >
           <AIInformationCard
-            insight={data.aiInsight}
-            className={PANEL_TRANSITION_CLASS}
-            onClick={() => handleCardSelect("ai-insight")}
-            isActive={activeCard === "ai-insight"}
-          />
+  insight={scenarioStage?.aiInsight ?? data.aiInsight}
+  alertLevel={scenarioStage ? scenarioStage.alertLevel : (isAlert ? "critical" : "normal")}
+  className={PANEL_TRANSITION_CLASS}
+  onClick={() => handleCardSelect("ai-insight")}
+  isActive={activeCard === "ai-insight"}
+/>
           <AlertLevelBar
             level={isAlert ? 75 : 25}
             className={PANEL_TRANSITION_CLASS}
@@ -598,6 +600,7 @@ function MedicalDashboardContent({ data }: { data: MedicalDashboardData }) {
           className={`bg-background -mx-5 -mb-5 ${COLOR_TRANSITION_CLASS}`}
           style={{ gridColumn: "1 / 4", gridRow: 11 }}
         />
+        <ScenarioPlayer onStageChange={setScenarioStage} />
       </div>
 
       {activeCard ? (
